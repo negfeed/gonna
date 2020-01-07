@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_picker/flutter_picker.dart';
 
 void main() => runApp(MyApp());
 
@@ -69,11 +70,31 @@ class _CreatePlanPageState extends State<CreatePlanPage>
         context: this.context,
         initialDate: DateTime.now().add(Duration(days: 1)),
         firstDate: DateTime.now(),
-        lastDate: DateTime.now().add(Duration(days: 7)));
+        lastDate: DateTime.now().add(Duration(days: 10)));
   }
 
   Future<void> _showTimePicker() async {
     await showTimePicker(context: this.context, initialTime: TimeOfDay.now());
+  }
+
+  Future<void> _showDurationPicker() async {
+    new Picker(
+        adapter: PickerDataAdapter<String>(pickerdata: [
+          "1 hour",
+          "2 hours",
+          "3 hours",
+          "4 hours",
+          "5 hours",
+          "6 hours",
+          "7 hours",
+          "8 hours"
+        ]),
+        hideHeader: true,
+        title: new Text("Please Select"),
+        onConfirm: (Picker picker, List value) {
+          print(value.toString());
+          print(picker.getSelectedValues());
+        }).showDialog(context);
   }
 
   @override
@@ -132,20 +153,19 @@ class _CreatePlanPageState extends State<CreatePlanPage>
             padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10.0),
             child: TextField(
               decoration: InputDecoration(
-                labelText: 'End Time',
+                labelText: 'Duration',
                 hasFloatingPlaceholder: true,
                 border: InputBorder.none,
               ),
-              onTap: _showTimePicker,
+              onTap: _showDurationPicker,
               readOnly: true,
             ),
           ),
           Divider(thickness: 1),
           Container(
             padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10.0),
-            child: new Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
+            child:
+                new Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
               Flexible(
                 fit: FlexFit.loose,
                 child: TextField(
