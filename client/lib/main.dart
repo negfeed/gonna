@@ -108,6 +108,11 @@ class _CreatePlanPageState extends State<CreatePlanPage>
     if (value.length == 0) {
       return "Choose a time.";
     }
+    DateTime chosenDateTime = DateTime(
+        _date.year, _date.month, _date.day, _time.hour, _time.minute);
+    if (chosenDateTime.isBefore(DateTime.now())) {
+      return "Choose a time in the future.";
+    }
     return null;
   }
 
@@ -127,10 +132,11 @@ class _CreatePlanPageState extends State<CreatePlanPage>
   Future<void> _showDatePicker() async {
     DateTime tomorrow = DateTime.now().add(Duration(days: 1));
     DateTime initialDate = _date != null ? _date : tomorrow;
+    DateTime now = DateTime.now();
     DateTime pickedDateTime = await showDatePicker(
         context: this.context,
         initialDate: initialDate,
-        firstDate: DateTime.now(),
+        firstDate: initialDate.isBefore(now) ? initialDate : now,
         lastDate: DateTime.now().add(Duration(days: 14)));
     if (pickedDateTime != null) {
       _date = pickedDateTime;
