@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "431165517918",
+    "firebase_url": "https://gonna-prod.firebaseio.com",
+    "project_id": "gonna-prod",
+    "storage_bucket": "gonna-prod.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:431165517918:android:443a71a2b245a8491844cf",
+        "android_client_info": {
+          "package_name": "com.negfeed.gonna"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "431165517918-4qflb7cmtkptn1flrm2valfds7r1gggh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYJNMYajRMXbPcU7DFHFQf1pSf7U0TgFU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "431165517918-4qflb7cmtkptn1flrm2valfds7r1gggh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "431165517918-hnn5lpme0ssadeucu7k9mq3jd95t663u.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.negfeed.gonna"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
