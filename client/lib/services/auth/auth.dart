@@ -49,7 +49,7 @@ class AuthService {
 
   Future signInFacebook() async {
     final facebookLogin = FacebookLogin();
-    final result = await facebookLogin.logIn(['email', 'user_gender']);
+    final result = await facebookLogin.logIn(['email']);
 
     User user;
     switch (result.status) {
