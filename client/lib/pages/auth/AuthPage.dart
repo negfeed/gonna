@@ -6,8 +6,13 @@ class AuthPage extends StatelessWidget {
 
   final AuthService _auth = AuthService();
 
-  _signIn() {
+  _signInAnon() {
     dynamic result = _auth.signInAnon();
+    print(result);
+  }
+
+  _signInFacebook() {
+    dynamic result = _auth.signInFacebook();
     print(result);
   }
 
@@ -22,8 +27,11 @@ class AuthPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             RaisedButton(
-                onPressed: _signIn,
-                child: const Text('Sign in', style: TextStyle(fontSize: 20))),
+                onPressed: _signInAnon,
+                child: const Text('Sign in Anonymously', style: TextStyle(fontSize: 20))),
+            RaisedButton(
+                onPressed: _signInFacebook,
+                child: const Text('Sign in with Facebook', style: TextStyle(fontSize: 20))),
           ],
         ),
       ),
