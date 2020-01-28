@@ -1,4 +1,4 @@
-package com.example.client
+package com.negfeed.gonna
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity
