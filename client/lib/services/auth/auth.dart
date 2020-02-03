@@ -2,6 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:gonna_client/models/user/user.dart';
 
+class GonnaAuthException implements Exception {
+  String cause;
+  GonnaAuthException(this.cause);
+}
+
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -32,10 +37,6 @@ class AuthService {
     }
   }
 
-  _showCancelledMessage() {}
-
-  _showErrorOnUI(String errorMessage) {}
-
   Future signInFacebook() async {
     final facebookLogin = FacebookLogin();
     final result = await facebookLogin.logIn(['email']);
@@ -47,10 +48,10 @@ class AuthService {
             await _sendFacebookTokenToFirebaseServer(result.accessToken.token);
         break;
       case FacebookLoginStatus.cancelledByUser:
-        _showCancelledMessage();
+        throw GonnaAuthException("User canceled login.");
         break;
       case FacebookLoginStatus.error:
-        _showErrorOnUI(result.errorMessage);
+        throw GonnaAuthException(result.errorMessage);
         break;
     }
     return user;
