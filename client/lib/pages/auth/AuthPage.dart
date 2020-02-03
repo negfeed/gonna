@@ -11,19 +11,48 @@ class AuthPage extends StatefulWidget {
 class _AuthPageState extends State<AuthPage> {
   final AuthService _auth = AuthService();
 
+  bool _signInInProgress = false;
+
   _signInFacebook(BuildContext context) async {
+    setState(() {
+      _signInInProgress = true;
+    });
     try {
       await _auth.signInFacebook();
     } catch (err) {
-      final snackBar = SnackBar(content: Text('Error: ' + err.cause));
+      final snackBar = SnackBar(content: Text(err.cause));
       Scaffold.of(context).showSnackBar(snackBar);
     }
+    setState(() {
+      _signInInProgress = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    var stackLayers = new List<Widget>();
+    stackLayers.add(_contentLayer());
+    if (_signInInProgress) {
+      stackLayers.add(_progressIndicatorLayer());
+    }
     return Scaffold(
-      body: _contentLayer(),
+      body: Stack(
+        children: stackLayers,
+      ),
+    );
+  }
+
+  Widget _progressIndicatorLayer() {
+    return Stack(
+      children: [
+        new Opacity(
+          opacity: 0.3,
+          child: const ModalBarrier(dismissible: false, color: Colors.grey),
+        ),
+        new Center(
+          child: new CircularProgressIndicator(),
+        ),
+      ],
     );
   }
 
