@@ -31,6 +31,8 @@ dependencies:
 
   provider: ^4.0.2
   flutter_facebook_login: 3.0.0
+  contacts_service: ^0.3.10
+  permission_handler: ^4.2.0+hotfix.3
 
 dev_dependencies:
   flutter_test:
