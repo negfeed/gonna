@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gonna_client/models/user/user.dart';
+import 'package:gonna_client/pages/contacts/ContactsPage.dart';
 import 'package:gonna_client/pages/create/create.dart';
 import 'package:gonna_client/services/auth/auth.dart';
 import 'package:provider/provider.dart';
@@ -15,6 +16,11 @@ class _HomePageState extends State<HomePage> {
   void _createPlan() {
     Navigator.of(context)
         .push(MaterialPageRoute<void>(builder: (_) => CreatePlanPage()));
+  }
+
+  void _openContacts() {
+    Navigator.of(context).pop();
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ContactsPage()));
   }
 
   void _signOut() {
@@ -37,6 +43,10 @@ class _HomePageState extends State<HomePage> {
             currentAccountPicture: CircleAvatar(
               backgroundImage: NetworkImage(user.photoUrl + "?type=normal"),
             ),
+          ),
+          ListTile(
+              title: Text('Contacts'),
+            onTap: _openContacts,
           ),
           ListTile(
             title: Text('Sign Out'),
