@@ -8,6 +8,7 @@
 .buildlog/
 .history
 .svn/
+ios/Flutter/.last_build_id
 
 # IntelliJ related
 *.iml
