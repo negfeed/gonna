@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gonna_client/pages/auth/AuthPage.dart';
+import 'package:gonna_client/pages/auth/PhoneEntryPage.dart';
 import 'package:gonna_client/pages/home/home.dart';
 import 'package:gonna_client/services/auth/auth.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +31,7 @@ class AuthWrapper extends StatelessWidget {
 
     // return either the Home or Authenticate widget
     if (user == null){
-      return AuthPage();
+      return PhoneEntryPage();
     } else {
       return HomePage();
     }

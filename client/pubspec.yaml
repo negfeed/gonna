@@ -34,7 +34,8 @@ dependencies:
   flutter_facebook_login: 3.0.0
   contacts_service: ^0.3.10
   permission_handler: ^4.2.0+hotfix.3
-  characters: 1.0.0
+  characters: 1.1.0-nullsafety.3
+  intl_phone_number_input: ^0.5.2+2
 
 dev_dependencies:
   flutter_test:
@@ -53,8 +54,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  assets:
-   - assets/memes/wait-a-minute-who-are-you.jpg
+  #  assets:
+  #   - assets/memes/wait-a-minute-who-are-you.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
