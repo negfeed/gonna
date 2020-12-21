@@ -34,26 +34,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text("Gonna"),
       ),
-      drawer: Drawer(
-          child: ListView(
-        children: <Widget>[
-          UserAccountsDrawerHeader(
-            accountName: Text(user.displayName),
-            accountEmail: Text(user.email),
-            currentAccountPicture: CircleAvatar(
-              backgroundImage: NetworkImage(user.photoUrl + "?type=normal"),
-            ),
-          ),
-          ListTile(
-              title: Text('Contacts'),
-            onTap: _openContacts,
-          ),
-          ListTile(
-            title: Text('Sign Out'),
-            onTap: _signOut,
-          ),
-        ],
-      )),
+      drawer: buildDrawer(user),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -70,5 +51,28 @@ class _HomePageState extends State<HomePage> {
         child: Icon(Icons.add),
       ),
     );
+  }
+
+  Drawer buildDrawer(User user) {
+    return Drawer(
+        child: ListView(
+      children: <Widget>[
+        UserAccountsDrawerHeader(
+          accountName: Text(user.displayName),
+          accountEmail: Text(user.email),
+          currentAccountPicture: CircleAvatar(
+            backgroundImage: NetworkImage(user.photoUrl + "?type=normal"),
+          ),
+        ),
+        ListTile(
+          title: Text('Contacts'),
+          onTap: _openContacts,
+        ),
+        ListTile(
+          title: Text('Sign Out'),
+          onTap: _signOut,
+        ),
+      ],
+    ));
   }
 }

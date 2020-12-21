@@ -299,12 +299,16 @@ PODS:
   - gRPC-Core/Interface (1.21.0)
   - GTMSessionFetcher/Core (1.3.1)
   - leveldb-library (1.22)
+  - libphonenumber (0.0.1):
+    - Flutter
+    - libPhoneNumber-iOS
+  - libPhoneNumber-iOS (0.9.15)
   - nanopb (0.3.9011):
     - nanopb/decode (= 0.3.9011)
     - nanopb/encode (= 0.3.9011)
   - nanopb/decode (0.3.9011)
   - nanopb/encode (0.3.9011)
-  - "permission_handler (4.2.0+hotfix.3)":
+  - "permission_handler (4.4.0+hotfix.4)":
     - Flutter
   - PromisesObjC (1.2.8)
 
@@ -315,6 +319,7 @@ DEPENDENCIES:
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - Flutter (from `Flutter`)
   - flutter_facebook_login (from `.symlinks/plugins/flutter_facebook_login/ios`)
+  - libphonenumber (from `.symlinks/plugins/libphonenumber/ios`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
 
 SPEC REPOS:
@@ -341,6 +346,7 @@ SPEC REPOS:
     - gRPC-Core
     - GTMSessionFetcher
     - leveldb-library
+    - libPhoneNumber-iOS
     - nanopb
     - PromisesObjC
 
@@ -357,6 +363,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_facebook_login:
     :path: ".symlinks/plugins/flutter_facebook_login/ios"
+  libphonenumber:
+    :path: ".symlinks/plugins/libphonenumber/ios"
   permission_handler:
     :path: ".symlinks/plugins/permission_handler/ios"
 
@@ -369,7 +377,7 @@ SPEC CHECKSUMS:
   FBSDKLoginKit: bd40354a96e4718765713ef225bc368f10dc395d
   Firebase: 5d77105d9740a07ca6b16927ca971db7e860faaf
   firebase_auth: d99b993c1405096e66c58211b1cd956c23eed1c5
-  firebase_core: 0d8be0e0d14c4902953aeb5ac5d7316d1fe4b978
+  firebase_core: 335c02abd48672b7c83c683df833d0488a72e73e
   FirebaseAnalytics: e83e64b1231dedcd9ddd4bdecd9bcfd6ba341679
   FirebaseAuth: ce45d7c5d46bed90159f3a73b6efbe8976ed3573
   FirebaseAuthInterop: 0ffa57668be100582bb7643d4fcb7615496c41fc
@@ -389,8 +397,10 @@ SPEC CHECKSUMS:
   gRPC-Core: c9aef9a261a1247e881b18059b84d597293c9947
   GTMSessionFetcher: cea130bbfe5a7edc8d06d3f0d17288c32ffe9925
   leveldb-library: 55d93ee664b4007aac644a782d11da33fba316f7
+  libphonenumber: bd14d5abfc5939ab0b0767234e2d8e2593af258e
+  libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
-  permission_handler: 40520ab8ad1bb78a282b832464e995ec87f77ec6
+  permission_handler: 8278954f2382902f63f00dd8828769c0bd6d511b
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
 
 PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
