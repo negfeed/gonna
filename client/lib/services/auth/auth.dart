@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:gonna_client/models/user/user.dart';
 
@@ -8,9 +8,9 @@ class GonnaAuthException implements Exception {
 }
 
 class AuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final firebase_auth.FirebaseAuth _auth = firebase_auth.FirebaseAuth.instance;
 
-  User _userFromFirebaseUser(FirebaseUser user) {
+  User _userFromFirebaseUser(firebase_auth.User user) {
     return user != null
         ? User(
             uid: user.uid,
@@ -26,10 +26,11 @@ class AuthService {
 
   Future _sendFacebookTokenToFirebaseServer(String token) async {
     try {
-      AuthCredential credential =
-          FacebookAuthProvider.getCredential(accessToken: token);
-      AuthResult result = await _auth.signInWithCredential(credential);
-      FirebaseUser user = result.user;
+      firebase_auth.AuthCredential credential =
+          firebase_auth.FacebookAuthProvider.credential(token);
+      firebase_auth.UserCredential result =
+          await _auth.signInWithCredential(credential);
+      firebase_auth.User user = result.user;
       return _userFromFirebaseUser(user);
     } catch (e) {
       print(e.toString());
