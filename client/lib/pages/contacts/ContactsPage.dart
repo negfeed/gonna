@@ -1,6 +1,11 @@
-import 'package:flutter/material.dart';
+import 'dart:core';
+
 import 'package:contacts_service/contacts_service.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart'
+    as permission_handler;
+import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart'
+    as permission_interface;
 
 class ContactListItem extends StatelessWidget {
   final Contact contact;
@@ -65,17 +70,16 @@ class ContactsPage extends StatefulWidget {
 class _ContactsPageState extends State<ContactsPage> {
   _checkContactsPermissionAndMaybeRequestPermission() async {
     print("Checking contacts permission.");
-    PermissionStatus permission = await PermissionHandler()
-        .checkPermissionStatus(PermissionGroup.contacts);
+    permission_handler.PermissionStatus permission =
+        await permission_interface.Permission.contacts.status;
     print("Contacts permission: ${permission}.");
-    if (permission == PermissionStatus.granted) {
+    if (permission == permission_handler.PermissionStatus.granted) {
       return;
     }
     print("Requesting contacts permission.");
-    Map<PermissionGroup, PermissionStatus> permissionMap =
-        await PermissionHandler()
-            .requestPermissions([PermissionGroup.contacts]);
-    if (permissionMap[PermissionGroup.contacts] != PermissionStatus.granted) {
+    permission_handler.PermissionStatus newPermssion =
+        await permission_interface.Permission.contacts.request();
+    if (newPermssion != permission_handler.PermissionStatus.granted) {
       print("Requesting permissions didn't work!!! Throwing exception.");
       throw new AppContactsPermissionException();
     }
@@ -87,7 +91,7 @@ class _ContactsPageState extends State<ContactsPage> {
   }
 
   _openAppSettings() {
-    PermissionHandler().openAppSettings();
+    permission_handler.openAppSettings();
   }
 
   @override
