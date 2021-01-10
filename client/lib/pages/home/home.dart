@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:gonna_client/models/user/user.dart';
 import 'package:gonna_client/pages/contacts/ContactsPage.dart';
 import 'package:gonna_client/pages/create/create.dart';
 import 'package:gonna_client/services/auth/auth.dart';
-import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -29,12 +27,11 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text("Gonna"),
       ),
-      drawer: buildDrawer(user),
+      drawer: buildDrawer(),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -53,16 +50,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Drawer buildDrawer(User user) {
+  Drawer buildDrawer() {
     return Drawer(
         child: ListView(
       children: <Widget>[
         UserAccountsDrawerHeader(
-          accountName: Text(user.displayName),
-          accountEmail: Text(user.email),
-          currentAccountPicture: CircleAvatar(
-            backgroundImage: NetworkImage(user.photoUrl + "?type=normal"),
-          ),
+          accountName: Text('TODO: Name'),
         ),
         ListTile(
           title: Text('Contacts'),
