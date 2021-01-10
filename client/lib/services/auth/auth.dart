@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:gonna_client/models/user/user.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class GonnaAuthException implements Exception {
   String cause;
@@ -71,5 +72,27 @@ class AuthService {
       print(error);
     }
     return null;
+  }
+
+  Future<void> verifyPhoneNumber(String phoneNumber) {
+    firebase_auth.FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: (firebase_auth.PhoneAuthCredential credentials) {
+          print("Verification completed.");
+        },
+        verificationFailed: (firebase_auth.FirebaseAuthException exception) {
+          print("Verification failed: $exception");
+        },
+        codeSent: _onCodeSent,
+        codeAutoRetrievalTimeout: (String verificationId) {
+          print("Code auto retrieval timeout: $verificationId");
+        });
+  }
+
+  void _onCodeSent(String verificationId, int forceResendingToken) async {
+    print("Code sent: $verificationId, $forceResendingToken");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString("auth-verificationId", verificationId);
+    await prefs.setInt("auth-forceResendingToken", forceResendingToken);
   }
 }
