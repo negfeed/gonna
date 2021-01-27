@@ -15,4 +15,9 @@ class GonnaRouteInformationParser
     // Handle unknown routes
     return Future.value(GonnaRoutePath.unknown());
   }
+
+  @override
+  RouteInformation restoreRouteInformation(GonnaRoutePath path) {
+    return RouteInformation(location: '/');
+  }
 }
