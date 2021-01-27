@@ -9,7 +9,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final AuthService _auth = AuthService();
 
   void _createPlan() {
     Navigator.of(context)
@@ -19,10 +18,6 @@ class _HomePageState extends State<HomePage> {
   void _openContacts() {
     Navigator.of(context).pop();
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ContactsPage()));
-  }
-
-  void _signOut() {
-    _auth.signOut();
   }
 
   @override
@@ -63,7 +58,11 @@ class _HomePageState extends State<HomePage> {
         ),
         ListTile(
           title: Text('Sign Out'),
-          onTap: _signOut,
+          onTap: () => AuthService.instance.signOut(),
+        ),
+        ListTile(
+          title: Text('Delete Account'),
+          onTap: () => AuthService.instance.deleteAccount(),
         ),
       ],
     ));

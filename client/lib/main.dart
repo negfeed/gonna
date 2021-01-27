@@ -2,20 +2,19 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:gonna_client/pages/error/GonnaErrorPage.dart';
 import 'package:gonna_client/pages/loading/GonnaLoadingPage.dart';
+import 'package:gonna_client/preference_util.dart';
 import 'package:gonna_client/routing/RouteInformationParser.dart';
 import 'package:gonna_client/routing/RouterDelegate.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  PreferenceUtil.init();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   // Create the initialization Future outside of `build`:
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
-  final GonnaRouterDelegate _routerDelegate = GonnaRouterDelegate();
-  final GonnaRouteInformationParser _routeInformationParser =
-      GonnaRouteInformationParser();
 
   // This widget is the root of your application.
   @override
@@ -35,8 +34,8 @@ class MyApp extends StatelessWidget {
               key: Key('Gonna App'),
               title: 'Gonna',
               theme: ThemeData(primarySwatch: Colors.blue),
-              routeInformationParser: _routeInformationParser,
-              routerDelegate: _routerDelegate,
+              routeInformationParser: GonnaRouteInformationParser(),
+              routerDelegate: GonnaRouterDelegate(),
             );
           }
           return MaterialApp(
