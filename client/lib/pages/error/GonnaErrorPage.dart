@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class GonnaErrorPage extends StatelessWidget {
-  FlutterError error;
+  Object error;
 
   GonnaErrorPage(this.error);
 
