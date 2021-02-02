@@ -51,13 +51,14 @@ class GonnaRouterDelegate extends RouterDelegate<GonnaRoutePath>
 
   List<Page> _getPages() {
     List<Page> pages = List();
-    if (!_appState.phoneNumberSubmitted) {
-      return [MaterialPage(child: PhoneEntryPage())];
-    } else if (!_appState.phoneNumberVerified) {
-      return [MaterialPage(child: PhoneVerificationPage())];
-    } else if (!_appState.profileInitialized) {
-      return [MaterialPage(child: ProfileInitializationPage())];
+    if (_appState.isUserLoggedIn()) {
+      pages = [MaterialPage(child: HomePage())];
+    } else {
+      pages = [MaterialPage(child: PhoneEntryPage())];
+      if (_appState.isCodeSent()) {
+        pages.add(MaterialPage(child: PhoneVerificationPage()));
+      }
     }
-    return [MaterialPage(child: HomePage())];
+    return pages;
   }
 }
