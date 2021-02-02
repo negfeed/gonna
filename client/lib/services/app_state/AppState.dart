@@ -1,34 +1,23 @@
 import 'package:flutter/widgets.dart';
+import 'package:gonna_client/services/auth/auth.dart';
 
 class AppState extends ChangeNotifier {
-  bool _phoneNumberSubmitted = false;
-  bool _phoneNumberVerified = false;
-  bool _profileInitialized = false;
 
-  bool get phoneNumberSubmitted {
-    return _phoneNumberSubmitted;
+  final AuthService _authService = AuthService.instance;
+
+  AppState() {
+    _authService.addListener(notifyListeners);
   }
 
-  bool get phoneNumberVerified {
-    return _phoneNumberVerified;
+  void dispose() {
+    _authService.removeListener(notifyListeners);
   }
 
-  bool get profileInitialized {
-    return _profileInitialized;
+  bool isCodeSent() {
+    return _authService.isCodeSent();
   }
 
-  void submitPhoneNumber() {
-    _phoneNumberSubmitted = true;
-    notifyListeners();
-  }
-
-  void setVerifiedPhoneNumber() {
-    _phoneNumberVerified = true;
-    notifyListeners();
-  }
-
-  void submitProfile() {
-    _profileInitialized = true;
-    notifyListeners();
+  bool isUserLoggedIn() {
+    return _authService.getCurrentUser() != null;
   }
 }

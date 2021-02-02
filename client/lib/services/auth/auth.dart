@@ -1,98 +1,155 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
-import 'package:gonna_client/models/user/user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
+import 'package:gonna_client/preference_util.dart';
+import 'package:gonna_client/services/error.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class GonnaAuthException implements Exception {
-  String cause;
-  GonnaAuthException(this.cause);
+const verificationIdPrefKey = "auth-verificationId";
+const forceResendingTokenPrefKey = "auth-forceResendingToken";
+const phoneNumberPrefKey = "auth-phoneNumber";
+
+enum VerificationResult { codeSent, verificationCompleted }
+
+class VerifyPhoneGenericError extends UserVisibleError {
+
+  VerifyPhoneGenericError(Exception cause) : super(cause);
+
+  @override
+  String get longMessage =>
+      "Failed to verify phone number. Please try again later.";
+
+  @override
+  String get shortMessage => "Failed to verify phone number.";
 }
 
-class AuthService {
+class SubmitSmsCodeGenericError extends UserVisibleError {
+
+  SubmitSmsCodeGenericError(Exception cause) : super(cause);
+
+  @override
+  String get longMessage => "SMS code submission error. Please try again later.";
+
+  @override
+  String get shortMessage => "SMS code submission error.";
+}
+
+class AuthService extends ChangeNotifier {
   final firebase_auth.FirebaseAuth _auth = firebase_auth.FirebaseAuth.instance;
+  final SharedPreferences _preferences = PreferenceUtil.instance;
 
-  User _userFromFirebaseUser(firebase_auth.User user) {
-    return user != null
-        ? User(
-            uid: user.uid,
-            displayName: user.displayName,
-            photoUrl: user.photoUrl,
-            email: user.email)
-        : null;
-  }
+  static AuthService _instance;
 
-  Stream<User> get user {
-    return _auth.onAuthStateChanged.map(_userFromFirebaseUser);
-  }
-
-  Future _sendFacebookTokenToFirebaseServer(String token) async {
-    try {
-      firebase_auth.AuthCredential credential =
-          firebase_auth.FacebookAuthProvider.credential(token);
-      firebase_auth.UserCredential result =
-          await _auth.signInWithCredential(credential);
-      firebase_auth.User user = result.user;
-      return _userFromFirebaseUser(user);
-    } catch (e) {
-      print(e.toString());
-      return null;
+  static AuthService get instance {
+    if (_instance == null) {
+      _instance = AuthService();
     }
+    return _instance;
   }
 
-  Future signInFacebook() async {
-    final facebookLogin = FacebookLogin();
-    final result = await facebookLogin.logIn(['email']);
+  User currentUser;
 
-    User user;
-    switch (result.status) {
-      case FacebookLoginStatus.loggedIn:
-        user =
-            await _sendFacebookTokenToFirebaseServer(result.accessToken.token);
-        break;
-      case FacebookLoginStatus.cancelledByUser:
-        throw GonnaAuthException("User canceled login.");
-        break;
-      case FacebookLoginStatus.error:
-        throw GonnaAuthException(result.errorMessage);
-        break;
-    }
-    return user;
+  AuthService() {
+    _auth.authStateChanges().listen(_handleUserChange);
   }
 
-  Future signOut() async {
-    try {
-      return await _auth.signOut();
-    } catch (error) {
-      print(error);
-    }
-    final facebookLogin = FacebookLogin();
-    try {
-      facebookLogin.logOut();
-    } catch (error) {
-      print(error);
-    }
-    return null;
-  }
+  Future<VerificationResult> verifyPhoneNumber(String phoneNumber) async {
+    await _preferences.setString(phoneNumberPrefKey, phoneNumber);
 
-  Future<void> verifyPhoneNumber(String phoneNumber) {
+    Completer<VerificationResult> _completer = new Completer();
+
     firebase_auth.FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         verificationCompleted: (firebase_auth.PhoneAuthCredential credentials) {
           print("Verification completed.");
+          _onVerificationCompleted(credentials, _completer);
         },
         verificationFailed: (firebase_auth.FirebaseAuthException exception) {
           print("Verification failed: $exception");
+          _completer.completeError(VerifyPhoneGenericError(exception));
         },
-        codeSent: _onCodeSent,
+        codeSent: (String verificationId, int forceResendingToken) {
+          print("Code sent: $verificationId, $forceResendingToken");
+          _onCodeSent(verificationId, forceResendingToken, _completer);
+        },
         codeAutoRetrievalTimeout: (String verificationId) {
           print("Code auto retrieval timeout: $verificationId");
         });
+
+    return _completer.future;
   }
 
-  void _onCodeSent(String verificationId, int forceResendingToken) async {
-    print("Code sent: $verificationId, $forceResendingToken");
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString("auth-verificationId", verificationId);
-    await prefs.setInt("auth-forceResendingToken", forceResendingToken);
+  void _onVerificationCompleted(firebase_auth.PhoneAuthCredential credentials,
+      Completer completer) async {
+    await _auth.signInWithCredential(credentials);
+    completer.complete(VerificationResult.verificationCompleted);
+    notifyListeners();
+  }
+
+  void _onCodeSent(String verificationId, int forceResendingToken,
+      Completer completer) async {
+    await _preferences.setString(verificationIdPrefKey, verificationId);
+    await _preferences.setInt(forceResendingTokenPrefKey, forceResendingToken);
+    completer.complete(VerificationResult.verificationCompleted);
+    notifyListeners();
+  }
+
+  bool isCodeSent() {
+    if (_preferences.containsKey(verificationIdPrefKey)) {
+      return true;
+    }
+    return false;
+  }
+
+  void _undoCodeSent() async {
+    if (_preferences.containsKey(verificationIdPrefKey)) {
+      await _preferences.remove(verificationIdPrefKey);
+    }
+    if (_preferences.containsKey(forceResendingTokenPrefKey)) {
+      await _preferences.remove(forceResendingTokenPrefKey);
+    }
+  }
+
+  void undoCodeSent() {
+    _undoCodeSent();
+    notifyListeners();
+  }
+
+  Future submitSmsCode(String smsCode) async {
+    var verificationId = _preferences.getString(verificationIdPrefKey);
+    var credential = PhoneAuthProvider.credential(
+        verificationId: verificationId, smsCode: smsCode);
+    try {
+      await _auth.signInWithCredential(credential);
+    } on firebase_auth.FirebaseAuthException catch (e) {
+      throw SubmitSmsCodeGenericError(e);
+    }
+    notifyListeners();
+  }
+
+  void _handleUserChange(User user) {
+    if (user != currentUser ||
+        user != null &&
+            currentUser != null &&
+            user.phoneNumber != currentUser.phoneNumber) {
+      notifyListeners();
+    }
+    currentUser = user;
+  }
+
+  User getCurrentUser() {
+    return currentUser;
+  }
+
+  void signOut() async {
+    _undoCodeSent();
+    await _auth.signOut();
+  }
+
+  void deleteAccount() async {
+    _undoCodeSent();
+    await _auth.currentUser.delete();
   }
 }
