@@ -6,15 +6,18 @@ import 'package:flutter/foundation.dart';
 import 'package:gonna_client/preference_util.dart';
 import 'package:gonna_client/services/error.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 const verificationIdPrefKey = "auth-verificationId";
 const forceResendingTokenPrefKey = "auth-forceResendingToken";
 const phoneNumberPrefKey = "auth-phoneNumber";
 
+const createDeviceAccountUrl =
+    'https://us-central1-gonna-prod.cloudfunctions.net/createDeviceAccount';
+
 enum VerificationResult { codeSent, verificationCompleted }
 
 class VerifyPhoneGenericError extends UserVisibleError {
-
   VerifyPhoneGenericError(Exception cause) : super(cause);
 
   @override
@@ -26,11 +29,11 @@ class VerifyPhoneGenericError extends UserVisibleError {
 }
 
 class SubmitSmsCodeGenericError extends UserVisibleError {
-
   SubmitSmsCodeGenericError(Exception cause) : super(cause);
 
   @override
-  String get longMessage => "SMS code submission error. Please try again later.";
+  String get longMessage =>
+      "SMS code submission error. Please try again later.";
 
   @override
   String get shortMessage => "SMS code submission error.";
@@ -130,6 +133,9 @@ class AuthService extends ChangeNotifier {
   }
 
   void _handleUserChange(User user) {
+    print('User change');
+    print('New user: $user\n');
+    print('Old user: $currentUser\n');
     if (user != currentUser ||
         user != null &&
             currentUser != null &&
@@ -151,5 +157,17 @@ class AuthService extends ChangeNotifier {
   void deleteAccount() async {
     _undoCodeSent();
     await _auth.currentUser.delete();
+  }
+
+  void createAndSignInUsingDeviceAccount() async {
+    print("Create device account.");
+    var customToken = await _auth.currentUser.getIdToken().then((token) async {
+      var response = await http.post(createDeviceAccountUrl,
+          headers: {'Authorization': 'Bearer ' + token});
+      print("Response status code: ${response.statusCode}");
+      print("Response body: ${response.body}");
+      return response.body;
+    });
+    await _auth.signInWithCustomToken(customToken);
   }
 }
