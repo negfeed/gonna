@@ -145,8 +145,8 @@ class AuthService extends ChangeNotifier {
     currentUser = user;
   }
 
-  User getCurrentUser() {
-    return currentUser;
+  bool currentUserHasPhoneNumber() {
+    return (currentUser != null) && ((currentUser?.phoneNumber ?? '') != '');
   }
 
   void signOut() async {

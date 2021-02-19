@@ -17,7 +17,7 @@ class AppState extends ChangeNotifier {
     return _authService.isCodeSent();
   }
 
-  bool isUserLoggedIn() {
-    return _authService.getCurrentUser() != null;
+  bool isUserLoggedInWithPhoneNumber() {
+    return _authService.currentUserHasPhoneNumber();
   }
 }

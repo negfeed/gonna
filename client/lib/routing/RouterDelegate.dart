@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gonna_client/pages/auth/PhoneEntryPage.dart';
 import 'package:gonna_client/pages/auth/PhoneVerificationPage.dart';
-import 'package:gonna_client/pages/auth/ProfileInitializationPage.dart';
 import 'package:gonna_client/pages/home/home.dart';
+import 'package:gonna_client/pages/profile/profile_editor.dart';
 import 'package:gonna_client/routing/RoutePath.dart';
 import 'package:gonna_client/services/app_state/AppState.dart';
 import 'package:gonna_client/services/app_state/InheritedAppState.dart';
@@ -51,8 +51,8 @@ class GonnaRouterDelegate extends RouterDelegate<GonnaRoutePath>
 
   List<Page> _getPages() {
     List<Page> pages = List();
-    if (_appState.isUserLoggedIn()) {
-      pages = [MaterialPage(child: HomePage())];
+    if (_appState.isUserLoggedInWithPhoneNumber()) {
+      pages = [MaterialPage(child: ProfileEditorPage())];
     } else {
       pages = [MaterialPage(child: PhoneEntryPage())];
       if (_appState.isCodeSent()) {
