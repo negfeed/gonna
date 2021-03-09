@@ -39,6 +39,7 @@ dependencies:
   optional: 5.0.0+1
   http: 0.12.2
   image_picker: 0.6.7+22
+  image_cropper: 1.4.0
 
 dev_dependencies:
   flutter_test:
