@@ -46,7 +46,9 @@ class _ProfileEditorPageState extends State<ProfileEditorPage> {
                         Align(
                           alignment: Alignment.bottomRight,
                           child: RawMaterialButton(
-                              onPressed: getImage,
+                              onPressed: () {
+                                _showImagePickOptionsDialog(context);
+                              },
                               elevation: 2.0,
                               fillColor: Colors.white,
                               child: Icon(
@@ -67,6 +69,7 @@ class _ProfileEditorPageState extends State<ProfileEditorPage> {
                     decoration: InputDecoration(
                       labelText: 'Add a First Name',
                     ),
+                    textCapitalization: TextCapitalization.sentences,
                   ),
                 ),
                 Padding(padding: const EdgeInsets.symmetric(vertical: 10)),
@@ -76,6 +79,7 @@ class _ProfileEditorPageState extends State<ProfileEditorPage> {
                     decoration: InputDecoration(
                       labelText: 'Add a Last Name',
                     ),
+                    textCapitalization: TextCapitalization.sentences,
                   ),
                 ),
                 Padding(padding: const EdgeInsets.symmetric(vertical: 20)),
@@ -93,15 +97,45 @@ class _ProfileEditorPageState extends State<ProfileEditorPage> {
     );
   }
 
-  Future getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+  Future _pickImage(ImageSource imageSource) async {
+    final pickedFile = await picker.getImage(
+        source: imageSource, preferredCameraDevice: CameraDevice.front);
 
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
-      } else {
-        print('No image selected.');
       }
     });
+
+    Navigator.pop(context);
+  }
+
+  void _showImagePickOptionsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Select Picture Source"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              leading: IconButton(iconSize: 48, icon: Icon(Icons.camera_alt)),
+              title: Text("Camera"),
+              onTap: () {
+                _pickImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading:
+                  IconButton(iconSize: 48, icon: Icon(Icons.photo_library)),
+              title: Text("Photo Library"),
+              onTap: () {
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
