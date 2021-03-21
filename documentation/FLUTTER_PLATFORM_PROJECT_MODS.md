@@ -33,13 +33,13 @@ The steps to enable Firebase phone auth for flutter can be found [here][flutter-
 
 Two changes are made to the iOS project:
 1. Add the Push Notification capability to the app. This enables verification that the auth attempt is coming from a real iOS phone. 
-2. Add the URL type to the applications Info.plist. This enables redirects to re-Captcha verification in the case of push notifications failure.
+2. Add the URL type to the applications `Info.plist`. This enables redirects to re-Captcha verification in the case of push notifications failure.
 
 ### image_picker (dart package)
 
 Roughly copied from the documentation [here][image_picker_ios_doc].
 
-Add the following keys to your Info.plist file, located in &lt;project root&gt;/ios/Runner/Info.plist:
+Add the following keys to your `Info.plist` file, located in &lt;project root&gt;/ios/Runner/Info.plist:
 
 1. NSPhotoLibraryUsageDescription - describe why your app needs permission for the photo library. This is called Privacy - Photo Library Usage Description in the visual editor.
 2. NSCameraUsageDescription - describe why your app needs access to the camera. This is called Privacy - Camera Usage Description in the visual editor.
