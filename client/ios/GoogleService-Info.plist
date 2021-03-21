@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>431165517918-hnn5lpme0ssadeucu7k9mq3jd95t663u.apps.googleusercontent.com</string>
+	<string>156680688055-7k0tum33usl105p8pp6lctvrqsm2l0bi.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.431165517918-hnn5lpme0ssadeucu7k9mq3jd95t663u</string>
+	<string>com.googleusercontent.apps.156680688055-7k0tum33usl105p8pp6lctvrqsm2l0bi</string>
 	<key>API_KEY</key>
-	<string>AIzaSyDJSPvBTt-9MzahiR6aoGzDAOJ5S_sS6NA</string>
+	<string>AIzaSyAU8sAbNmZy8yuooC7lmRyprctMCUDE-IM</string>
 	<key>GCM_SENDER_ID</key>
-	<string>431165517918</string>
+	<string>156680688055</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.negfeed.gonna</string>
 	<key>PROJECT_ID</key>
-	<string>gonna-prod</string>
+	<string>gonna-sandbox</string>
 	<key>STORAGE_BUCKET</key>
-	<string>gonna-prod.appspot.com</string>
+	<string>gonna-sandbox.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,8 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:431165517918:ios:aee4e68019fa65091844cf</string>
-	<key>DATABASE_URL</key>
-	<string>https://gonna-prod.firebaseio.com</string>
+	<string>1:156680688055:ios:7d298a068ba49a292c1832</string>
 </dict>
 </plist>
