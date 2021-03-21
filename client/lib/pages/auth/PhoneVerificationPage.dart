@@ -18,6 +18,7 @@ class _PhoneVerificationPageState extends State<PhoneVerificationPage> {
 
   @override
   void initState() {
+    super.initState();
     _textEditingController = TextEditingController();
     _pinFieldAutoFill = PinFieldAutoFill(
       keyboardType: TextInputType.number,

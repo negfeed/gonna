@@ -6,6 +6,7 @@ import 'package:gonna_client/preference_util.dart';
 import 'package:gonna_client/routing/RouteInformationParser.dart';
 import 'package:gonna_client/routing/RouterDelegate.dart';
 import 'package:gonna_client/services/flavor/flavor.dart';
+import 'package:gonna_client/theme_data.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,7 +42,7 @@ class MyApp extends StatelessWidget {
       return MaterialApp.router(
         key: Key('Gonna App'),
         title: 'Gonna',
-        theme: ThemeData(primarySwatch: Colors.blue),
+        theme: themeData,
         routeInformationParser: GonnaRouteInformationParser(),
         routerDelegate: GonnaRouterDelegate(),
       );
