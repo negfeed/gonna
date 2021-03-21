@@ -13,7 +13,7 @@ const forceResendingTokenPrefKey = "auth-forceResendingToken";
 const phoneNumberPrefKey = "auth-phoneNumber";
 
 const createDeviceAccountUrl =
-    'https://us-central1-gonna-prod.cloudfunctions.net/createDeviceAccount';
+    'https://us-central1-gonna-sandbox.cloudfunctions.net/createDeviceAccount';
 
 enum VerificationResult { codeSent, verificationCompleted }
 
