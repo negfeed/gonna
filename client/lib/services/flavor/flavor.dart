@@ -29,9 +29,21 @@ class FlavorConfig {
 
   Flavor flavor;
   String flavorString;
+  String functionsUrlBase;
 
   FlavorConfig(Flavor flavor, String flavorString) {
     this.flavor = flavor;
     this.flavorString = flavorString;
+
+    switch (flavor) {
+      case Flavor.PROD:
+        functionsUrlBase = 'https://us-central1-gonna-prod.cloudfunctions.net/';
+        break;
+      case Flavor.SANDBOX:
+        functionsUrlBase = 'https://us-central1-gonna-sandbox.cloudfunctions.net/';
+        break;
+      default:
+        throw Exception('Unrecognized flavor!!');
+    }
   }
 }
