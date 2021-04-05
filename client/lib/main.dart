@@ -5,11 +5,12 @@ import 'package:gonna_client/pages/loading/GonnaLoadingPage.dart';
 import 'package:gonna_client/preference_util.dart';
 import 'package:gonna_client/routing/RouteInformationParser.dart';
 import 'package:gonna_client/routing/RouterDelegate.dart';
-import 'package:gonna_client/services/environment/environment_config.dart';
+import 'package:gonna_client/services/flavor/flavor.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  PreferenceUtil.init();
+  await PreferenceUtil.init();
+  await FlavorConfig.init();
   runApp(MyApp());
 }
 
@@ -52,7 +53,7 @@ class MyApp extends StatelessWidget {
   }
 
   static Widget _maybeWrapWithBanner(Widget widget) {
-    if (EnvironmentConfig.ENVIRONMENT == 'prod') {
+    if (FlavorConfig.instance.flavor == Flavor.PROD) {
       return widget;
     }
     return Directionality(
@@ -60,7 +61,7 @@ class MyApp extends StatelessWidget {
       child: Banner(
         child: widget,
         location: BannerLocation.topStart,
-        message: EnvironmentConfig.ENVIRONMENT,
+        message: FlavorConfig.instance.flavorString,
         color: Colors.green.withOpacity(0.6),
         textStyle: TextStyle(
             fontWeight: FontWeight.w700, fontSize: 12.0, letterSpacing: 1.0),
