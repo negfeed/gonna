@@ -27,7 +27,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.156680688055-7k0tum33usl105p8pp6lctvrqsm2l0bi</string>
+				<string>$(APP_FIREBASE_URL_SCHEME)</string>
 			</array>
 		</dict>
 	</array>
