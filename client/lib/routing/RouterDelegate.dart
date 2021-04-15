@@ -18,6 +18,7 @@ class GonnaRouterDelegate extends RouterDelegate<GonnaRoutePath>
 
   void dispose() {
     _appState.removeListener(notifyListeners);
+    super.dispose();
   }
 
   @override
