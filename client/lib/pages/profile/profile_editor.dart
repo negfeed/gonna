@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:gonna_client/widgets/profile_picture/profile_picture.dart';
 
