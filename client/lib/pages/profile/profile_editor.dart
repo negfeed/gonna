@@ -1,4 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:gonna_client/services/auth/auth.dart';
+import 'package:gonna_client/services/error.dart' as error;
+import 'package:gonna_client/widgets/error/error_dialog.dart' as error_dialog;
 import 'package:gonna_client/widgets/profile_picture/profile_picture.dart';
 
 class ProfileEditorPage extends StatefulWidget {
@@ -8,14 +13,20 @@ class ProfileEditorPage extends StatefulWidget {
 
 class _ProfileEditorPageState extends State<ProfileEditorPage> {
   final _formKey = GlobalKey<FormState>();
-  ProfilePictureController _profilePictureController;
-  ProfilePictureErrorController _profilePictureErrorController;
+  final ProfilePictureController _profilePictureController =
+      ProfilePictureController();
+  final ProfilePictureErrorController _profilePictureErrorController =
+      ProfilePictureErrorController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    _profilePictureController = ProfilePictureController();
-    _profilePictureErrorController = ProfilePictureErrorController();
+  void dispose() {
+    _profilePictureController.dispose();
+    _profilePictureErrorController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    super.dispose();
   }
 
   @override
@@ -46,6 +57,7 @@ class _ProfileEditorPageState extends State<ProfileEditorPage> {
                     height: 50,
                     padding: const EdgeInsets.symmetric(horizontal: 40),
                     child: TextFormField(
+                      controller: _firstNameController,
                       decoration: InputDecoration(
                         labelText: 'First Name',
                         floatingLabelBehavior: FloatingLabelBehavior.never,
@@ -59,6 +71,7 @@ class _ProfileEditorPageState extends State<ProfileEditorPage> {
                     height: 50,
                     padding: const EdgeInsets.symmetric(horizontal: 40),
                     child: TextFormField(
+                      controller: _lastNameController,
                       decoration: InputDecoration(
                         labelText: 'Last Name',
                         floatingLabelBehavior: FloatingLabelBehavior.never,
@@ -110,5 +123,26 @@ class _ProfileEditorPageState extends State<ProfileEditorPage> {
       return;
     }
     print("Yay, validation passed!");
+    try {
+      _createProfile(_profilePictureController.value,
+          _firstNameController.value.text, _lastNameController.value.text);
+    } on error.UserVisibleError catch (error) {
+      error_dialog.showErrorDialog(context, error);
+    }
+  }
+
+  // TODO: Consider moving this method to a service class.
+  // TODO: Consider applying the try/on/catch stanza systematically (code generation??).
+  void _createProfile(File profilePicture, String firstName, String lastName) {
+    try {
+      AuthService.instance.maybeCreateAndSignInUsingDeviceAccount();
+      // TODO: Upload the profile picture to firebase storage.
+      // TODO: Create profile instance in firestore.
+      throw Exception('hello');
+    } on error.UserVisibleError catch (uve) {
+      throw uve;
+    } catch (e) {
+      throw error.CatchAllError(e);
+    }
   }
 }
