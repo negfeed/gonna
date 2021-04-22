@@ -136,10 +136,7 @@ class AuthService extends ChangeNotifier {
     print('User change');
     print('New user: $user\n');
     print('Old user: $currentUser\n');
-    if (user != currentUser ||
-        user != null &&
-            currentUser != null &&
-            user.phoneNumber != currentUser.phoneNumber) {
+    if (user != currentUser && (user == null || currentUser == null)) {
       notifyListeners();
     }
     currentUser = user;
@@ -159,10 +156,18 @@ class AuthService extends ChangeNotifier {
     await _auth.currentUser.delete();
   }
 
-  void createAndSignInUsingDeviceAccount() async {
+  // Creates a device account if it has not been created yet, and signs into that device account.
+  void maybeCreateAndSignInUsingDeviceAccount() async {
+    assert(currentUser != null);
+
+    var idToken = await currentUser.getIdTokenResult();
+    if (idToken.signInProvider != 'phone') {
+      return;
+    }
+
     print("Create device account.");
     var customToken = await _auth.currentUser.getIdToken().then((token) async {
-      var response = await http.post(getFunctionUrl(createDeviceAccountPath),
+      var response = await http.post(_getFunctionUrl(createDeviceAccountPath),
           headers: {'Authorization': 'Bearer ' + token});
       print("Response status code: ${response.statusCode}");
       print("Response body: ${response.body}");
@@ -171,7 +176,7 @@ class AuthService extends ChangeNotifier {
     await _auth.signInWithCustomToken(customToken);
   }
 
-  String getFunctionUrl(String path) {
+  String _getFunctionUrl(String path) {
     return FlavorConfig.instance.functionsUrlBase + path;
   }
 }
