@@ -52,6 +52,10 @@ exports.createDeviceAccount = functions.https.onRequest(async (request, response
   // Create custom authorization token.
   const userId = uuidv4();
   const additionalClaims = {
+    // Device gonna account type (gat).
+    // This is an explicit market on the token to make it easier to distinguish it from phone accounts.
+    gat: 'device',
+    // The phone number that was used to mint this token.
     phoneNumber: decodedIdToken.phone_number,
   };
   
