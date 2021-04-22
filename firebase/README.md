@@ -10,6 +10,12 @@ This directory contains server side code and configuration such as functions and
 $ firebase deploy --only functions
 ```
 
+### Deploy storage access rules
+
+```sh
+$ firebase deploy --only storage
+```
+
 ### Switch targeted projects
 
 ```sh
