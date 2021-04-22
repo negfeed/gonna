@@ -9,8 +9,10 @@ class AppState extends ChangeNotifier {
     _authService.addListener(notifyListeners);
   }
 
+  @override
   void dispose() {
     _authService.removeListener(notifyListeners);
+    super.dispose();
   }
 
   bool isCodeSent() {
