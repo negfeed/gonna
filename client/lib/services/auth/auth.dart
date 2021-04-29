@@ -39,6 +39,41 @@ class SubmitSmsCodeGenericError extends UserVisibleError {
   String get shortMessage => "SMS code submission error.";
 }
 
+enum SignInProvider { none, phone, device }
+
+class User {
+  firebase_auth.User _firebaseUser;
+  firebase_auth.IdTokenResult _idTokenResult;
+
+  User(this._firebaseUser, this._idTokenResult);
+
+  String get uid {
+    return _firebaseUser?.uid;
+  }
+
+  Future<String> getIdToken() async {
+    _firebaseUser?.getIdToken();
+  }
+
+  bool isSignedIn() {
+    return _firebaseUser != null;
+  }
+
+  SignInProvider getSignInProvider() {
+    if (_firebaseUser == null) {
+      return SignInProvider.none;
+    } else if (_idTokenResult.signInProvider == 'phone') {
+      return SignInProvider.phone;
+    } else if (_idTokenResult.signInProvider == 'custom' &&
+        _idTokenResult.claims != null &&
+        _idTokenResult.claims.containsKey('gat') &&
+        _idTokenResult.claims['gat'] == 'device') {
+      return SignInProvider.device;
+    }
+    return SignInProvider.none;
+  }
+}
+
 class AuthService extends ChangeNotifier {
   final firebase_auth.FirebaseAuth _auth = firebase_auth.FirebaseAuth.instance;
   final SharedPreferences _preferences = PreferenceUtil.instance;
@@ -52,10 +87,10 @@ class AuthService extends ChangeNotifier {
     return _instance;
   }
 
-  User currentUser;
+  User currentUser = User(null, null);
 
   AuthService() {
-    _auth.authStateChanges().listen(_handleUserChange);
+    _registerCurrentUserChanges();
   }
 
   Future<VerificationResult> verifyPhoneNumber(String phoneNumber) async {
@@ -132,18 +167,29 @@ class AuthService extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _handleUserChange(User user) {
+  void _registerCurrentUserChanges() {
+    _currentUserChanges().listen(_handleCurrentUserChanges);
+  }
+
+  void _handleCurrentUserChanges(User user) {
     print('User change');
     print('New user: $user\n');
     print('Old user: $currentUser\n');
-    if (user != currentUser && (user == null || currentUser == null)) {
+    // Notify the app state of change if the user switched from a logged in state to a logged out state or
+    // the other way around. We don't need to notify the app state of any change when the logged in user
+    // switches from the phone login provider to the device custom login provider.
+    if (user.isSignedIn() != currentUser.isSignedIn()) {
       notifyListeners();
     }
     currentUser = user;
   }
 
-  bool currentUserHasPhoneNumber() {
-    return (currentUser != null) && ((currentUser?.phoneNumber ?? '') != '');
+  Stream<User> _currentUserChanges() {
+    return _auth.authStateChanges().asyncMap((firebaseUser) {
+      return firebaseUser
+          .getIdTokenResult()
+          .then((idTokenResult) => User(firebaseUser, idTokenResult));
+    });
   }
 
   void signOut() async {
@@ -158,12 +204,12 @@ class AuthService extends ChangeNotifier {
 
   // Creates a device account if it has not been created yet, and signs into that device account.
   void maybeCreateAndSignInUsingDeviceAccount() async {
-    assert(currentUser != null);
-
-    var idToken = await currentUser.getIdTokenResult();
-    if (idToken.signInProvider != 'phone') {
+    if (currentUser.getSignInProvider() == SignInProvider.device) {
       return;
     }
+
+    assert(currentUser.getSignInProvider() == SignInProvider.phone,
+        "The user must be signed in using the phone provider before calling this function.");
 
     print("Create device account.");
     var customToken = await _auth.currentUser.getIdToken().then((token) async {

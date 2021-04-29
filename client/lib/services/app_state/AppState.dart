@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
-import 'package:gonna_client/services/auth/auth.dart';
+import 'package:gonna_client/services/auth/auth.dart' as auth;
 
 class AppState extends ChangeNotifier {
 
-  final AuthService _authService = AuthService.instance;
+  final auth.AuthService _authService = auth.AuthService.instance;
 
   AppState() {
     _authService.addListener(notifyListeners);
@@ -20,6 +20,10 @@ class AppState extends ChangeNotifier {
   }
 
   bool isUserLoggedInWithPhoneNumber() {
-    return _authService.currentUserHasPhoneNumber();
+    return _authService.currentUser.getSignInProvider() == auth.SignInProvider.phone;
+  }
+
+  bool isUserLoggedInWithDeviceToken() {
+    return _authService.currentUser.getSignInProvider() == auth.SignInProvider.device;
   }
 }

@@ -52,7 +52,7 @@ class GonnaRouterDelegate extends RouterDelegate<GonnaRoutePath>
 
   List<Page> _getPages() {
     List<Page> pages = List();
-    if (_appState.isUserLoggedInWithPhoneNumber()) {
+    if (_appState.isUserLoggedInWithPhoneNumber() || _appState.isUserLoggedInWithDeviceToken()) {
       pages = [MaterialPage(child: ProfileEditorPage())];
     } else {
       pages = [MaterialPage(child: PhoneEntryPage())];
