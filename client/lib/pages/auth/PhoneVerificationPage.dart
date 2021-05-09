@@ -22,7 +22,7 @@ class _PhoneVerificationPageState extends State<PhoneVerificationPage> {
     _textEditingController = TextEditingController();
     _pinFieldAutoFill = PinFieldAutoFill(
       keyboardType: TextInputType.number,
-      autofocus: true,
+      autoFocus: true,
       onCodeChanged: (code) => _onCodeChanged(code),
       controller: _textEditingController,
     );
