@@ -51,6 +51,7 @@ class _HomePageState extends State<HomePage> {
       children: <Widget>[
         UserAccountsDrawerHeader(
           accountName: Text('TODO: Name'),
+          accountEmail: Text('TODO: Email'),
         ),
         ListTile(
           title: Text('Contacts'),

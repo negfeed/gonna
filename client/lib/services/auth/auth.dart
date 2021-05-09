@@ -222,7 +222,7 @@ class AuthService extends ChangeNotifier {
     await _auth.signInWithCustomToken(customToken);
   }
 
-  String _getFunctionUrl(String path) {
-    return FlavorConfig.instance.functionsUrlBase + path;
+  Uri _getFunctionUrl(String path) {
+    return Uri.parse(FlavorConfig.instance.functionsUrlBase + path);
   }
 }

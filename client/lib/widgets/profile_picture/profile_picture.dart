@@ -174,15 +174,14 @@ class _ProfilePictureState extends State<ProfilePicture>
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             ListTile(
-              leading: IconButton(iconSize: 48, icon: Icon(Icons.camera_alt)),
+              leading: Icon(Icons.camera_alt, size: 48),
               title: Text("Camera"),
               onTap: () {
                 _pickImage(ImageSource.camera);
               },
             ),
             ListTile(
-              leading:
-                  IconButton(iconSize: 48, icon: Icon(Icons.photo_library)),
+              leading: Icon(Icons.photo_library, size: 48),
               title: Text("Photo Library"),
               onTap: () {
                 _pickImage(ImageSource.gallery);

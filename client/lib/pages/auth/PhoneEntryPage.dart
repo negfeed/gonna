@@ -44,8 +44,7 @@ class _PhoneEntryPageState extends State<PhoneEntryPage> {
                         _phoneNumber = phoneNumber;
                       },
                       selectorConfig: SelectorConfig(
-                          selectorType: PhoneInputSelectorType.DROPDOWN,
-                          backgroundColor: Colors.white),
+                          selectorType: PhoneInputSelectorType.DROPDOWN),
                       countries: ['US', 'CA'],
                       initialValue: PhoneNumber(isoCode: 'US'),
                       autoFocus: true,
@@ -61,10 +60,11 @@ class _PhoneEntryPageState extends State<PhoneEntryPage> {
                 ],
               ),
             ),
-            if (_error != null) Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: UserVisibleErrorMessage(error: _error),
-            ),
+            if (_error != null)
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: UserVisibleErrorMessage(error: _error),
+              ),
           ],
         ),
       ),
