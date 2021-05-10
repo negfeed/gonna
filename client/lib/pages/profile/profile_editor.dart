@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:gonna_client/services/auth/auth.dart';
 import 'package:gonna_client/services/error.dart' as error;
+import 'package:gonna_client/services/firestore/profile_firestore.dart' as profile_firestore;
 import 'package:gonna_client/services/storage/storage.dart';
 import 'package:gonna_client/widgets/error/error_dialog.dart' as error_dialog;
 import 'package:gonna_client/widgets/profile_picture/profile_picture.dart';
@@ -138,8 +139,7 @@ class _ProfileEditorPageState extends State<ProfileEditorPage> {
     try {
       AuthService.instance.maybeCreateAndSignInUsingDeviceAccount();
       StorageService.instance.uploadProfilePicture(profilePicture);
-      // TODO: Create profile instance in firestore.
-      throw Exception('hello');
+      profile_firestore.ProfileFirestoreService.instance.createProfile(firstName, lastName);
     } on error.UserVisibleError catch (uve) {
       throw uve;
     } catch (e) {

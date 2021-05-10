@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "gonna-prod"
+    "prod": "gonna-prod",
+    "sandbox": "gonna-sandbox"
   }
 }
