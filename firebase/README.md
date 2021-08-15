@@ -4,6 +4,20 @@ This directory contains server side code and configuration such as functions and
 
 ## How to ...?
 
+### Figure out which project is current
+
+```sh
+$ firebase projects:list
+```
+
+The current project will have a '(current)' annotation in the `Project ID` column.
+
+### Switch current project
+
+```sh
+$ firebase us <alias or project ID>
+```
+
 ### Deploy functions only
 
 ```sh
