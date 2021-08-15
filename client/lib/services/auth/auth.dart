@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 const verificationIdPrefKey = "auth-verificationId";
-const forceResendingTokenPrefKey = "auth-forceResendingToken";
+const resendTokenPrefKey = "auth-resendToken";
 const phoneNumberPrefKey = "auth-phoneNumber";
 
 const createDeviceAccountPath = 'createDeviceAccount';
@@ -51,8 +51,13 @@ class User {
     return _firebaseUser?.uid;
   }
 
+  String get phoneNumber {
+    assert(getSignInProvider() == SignInProvider.device);
+    return _idTokenResult.claims['phoneNumber'];
+  }
+
   Future<String> getIdToken() async {
-    _firebaseUser?.getIdToken();
+    return _firebaseUser?.getIdToken();
   }
 
   bool isSignedIn() {
@@ -108,9 +113,9 @@ class AuthService extends ChangeNotifier {
           print("Verification failed: $exception");
           _completer.completeError(VerifyPhoneGenericError(exception));
         },
-        codeSent: (String verificationId, int forceResendingToken) {
-          print("Code sent: $verificationId, $forceResendingToken");
-          _onCodeSent(verificationId, forceResendingToken, _completer);
+        codeSent: (String verificationId, int resendToken) {
+          print("Code sent: $verificationId, $resendToken");
+          _onCodeSent(verificationId, resendToken, _completer);
         },
         codeAutoRetrievalTimeout: (String verificationId) {
           print("Code auto retrieval timeout: $verificationId");
@@ -126,10 +131,12 @@ class AuthService extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _onCodeSent(String verificationId, int forceResendingToken,
-      Completer completer) async {
+  void _onCodeSent(
+      String verificationId, int resendToken, Completer completer) async {
     await _preferences.setString(verificationIdPrefKey, verificationId);
-    await _preferences.setInt(forceResendingTokenPrefKey, forceResendingToken);
+    if (resendToken != null) {
+      await _preferences.setInt(resendTokenPrefKey, resendToken);
+    }
     completer.complete(VerificationResult.verificationCompleted);
     notifyListeners();
   }
@@ -145,8 +152,8 @@ class AuthService extends ChangeNotifier {
     if (_preferences.containsKey(verificationIdPrefKey)) {
       await _preferences.remove(verificationIdPrefKey);
     }
-    if (_preferences.containsKey(forceResendingTokenPrefKey)) {
-      await _preferences.remove(forceResendingTokenPrefKey);
+    if (_preferences.containsKey(resendTokenPrefKey)) {
+      await _preferences.remove(resendTokenPrefKey);
     }
   }
 
@@ -203,7 +210,7 @@ class AuthService extends ChangeNotifier {
   }
 
   // Creates a device account if it has not been created yet, and signs into that device account.
-  void maybeCreateAndSignInUsingDeviceAccount() async {
+  Future<void> maybeCreateAndSignInUsingDeviceAccount() async {
     if (currentUser.getSignInProvider() == SignInProvider.device) {
       return;
     }
@@ -220,6 +227,16 @@ class AuthService extends ChangeNotifier {
       return response.body;
     });
     await _auth.signInWithCustomToken(customToken);
+    
+    // There seems to be a race condition where the next firebase operation will
+    // be associated with the phone account rather than the device account. This
+    // block will prevent returning from this method until the authenticated user
+    // has switched from phone account to device account.
+    await for (User user in _currentUserChanges()) {
+      if (user != null && user.getSignInProvider() == SignInProvider.device) {
+        return;
+      }
+    }
   }
 
   Uri _getFunctionUrl(String path) {

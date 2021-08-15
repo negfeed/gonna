@@ -24,7 +24,7 @@ class ProfileFirestoreService extends foundation.ChangeNotifier {
     return _instance;
   }
 
-  void createProfile(String firstName, String lastName) async {
+  Future<String> createProfile(String firstName, String lastName) async {
     cloud_firestore.CollectionReference profiles =
         _firestore.collection('profiles');
     await profiles
@@ -34,6 +34,7 @@ class ProfileFirestoreService extends foundation.ChangeNotifier {
     await _preferences.setString(profileLastNamePrefKey, lastName);
     print('Added profile to the profiles collection.');
     notifyListeners();
+    return _auth.currentUser.uid;
   }
 
   bool isProfileInitialized() {

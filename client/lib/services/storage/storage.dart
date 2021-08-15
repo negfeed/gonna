@@ -16,7 +16,7 @@ class StorageService {
     return _instance;
   }
 
-  void uploadProfilePicture(File profilePicture) async {
+  Future<void> uploadProfilePicture(File profilePicture) async {
     await _storage.ref('profileImage/${_auth.currentUser.uid}').putFile(profilePicture);
     print('Finished uploading the image');
   }

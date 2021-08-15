@@ -57,6 +57,8 @@ exports.createDeviceAccount = functions.https.onRequest(async (request, response
     gat: 'device',
     // The phone number that was used to mint this token.
     phoneNumber: decodedIdToken.phone_number,
+    // The time this token was minted.
+    creationTimestamp: Date.now(),
   };
   
   admin
