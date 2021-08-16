@@ -8,11 +8,20 @@ service cloud.firestore {
   function signedIn() {
     return request.auth.uid != null && isDeviceAccount();
   }
+
+  function deviceTokenIsRecent() {
+    return request.time.toMillis() < request.auth.token.creationTimestamp + duration.value(10, 'm').seconds() * 1000;
+  }
   
   match /databases/{database}/documents {
     match /profiles/{userId} {
       allow read: if signedIn();
       allow write: if request.auth.uid == userId && isDeviceAccount();
+    }
+
+    match /phones/{phoneNumber} {
+      allow read: if signedIn();
+      allow write: if signedIn() && request.auth.token.phoneNumber == phoneNumber && deviceTokenIsRecent();
     }
   }
 }
