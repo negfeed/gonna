@@ -12,9 +12,9 @@ class PhoneVerificationPage extends StatefulWidget {
 class _PhoneVerificationPageState extends State<PhoneVerificationPage> {
   final AuthService _auth = AuthService.instance;
 
-  UserVisibleError _error;
-  TextEditingController _textEditingController;
-  PinFieldAutoFill _pinFieldAutoFill;
+  UserVisibleError? _error;
+  late TextEditingController _textEditingController;
+  late PinFieldAutoFill _pinFieldAutoFill;
 
   @override
   void initState() {
@@ -49,7 +49,7 @@ class _PhoneVerificationPageState extends State<PhoneVerificationPage> {
             if (_error != null)
               Padding(
                 padding: const EdgeInsets.all(20.0),
-                child: UserVisibleErrorMessage(error: _error),
+                child: UserVisibleErrorMessage(error: _error!),
               ),
           ],
         ),
@@ -57,7 +57,10 @@ class _PhoneVerificationPageState extends State<PhoneVerificationPage> {
     );
   }
 
-  _onCodeChanged(String code) async {
+  _onCodeChanged(String? code) async {
+    if (code == null) {
+      return;
+    }
     if (code.length == 1) {
       if (_error != null) {
         setState(() {

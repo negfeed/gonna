@@ -31,12 +31,14 @@ class AppState extends ChangeNotifier {
   }
 
   bool isUserLoggedInWithPhoneNumber() {
-    return _authService.currentUser.getSignInProvider() ==
+    assert(_authService.currentUser != null);
+    return _authService.currentUser!.getSignInProvider() ==
         auth.SignInProvider.phone;
   }
 
   bool isUserLoggedInWithDeviceToken() {
-    return _authService.currentUser.getSignInProvider() ==
+    assert(_authService.currentUser != null);
+    return _authService.currentUser!.getSignInProvider() ==
         auth.SignInProvider.device;
   }
 

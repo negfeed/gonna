@@ -14,8 +14,8 @@ class _PhoneEntryPageState extends State<PhoneEntryPage> {
 
   final AuthService _auth = AuthService.instance;
 
-  PhoneNumber _phoneNumber;
-  UserVisibleError _error;
+  PhoneNumber? _phoneNumber;
+  UserVisibleError? _error;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +63,7 @@ class _PhoneEntryPageState extends State<PhoneEntryPage> {
             if (_error != null)
               Padding(
                 padding: const EdgeInsets.all(20.0),
-                child: UserVisibleErrorMessage(error: _error),
+                child: UserVisibleErrorMessage(error: _error!),
               ),
           ],
         ),
@@ -75,9 +75,9 @@ class _PhoneEntryPageState extends State<PhoneEntryPage> {
     setState(() {
       _error = null;
     });
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       try {
-        await _auth.verifyPhoneNumber(_phoneNumber.phoneNumber);
+        await _auth.verifyPhoneNumber(_phoneNumber!.phoneNumber!);
       } on UserVisibleError catch (error) {
         setState(() {
           _error = error;

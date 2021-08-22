@@ -15,26 +15,29 @@ class ProfileFirestoreService extends foundation.ChangeNotifier {
   final shared_preferences.SharedPreferences _preferences =
       preference_util.PreferenceUtil.instance;
 
-  static ProfileFirestoreService _instance;
+  static ProfileFirestoreService? _instance;
 
   static ProfileFirestoreService get instance {
     if (_instance == null) {
       _instance = ProfileFirestoreService();
     }
-    return _instance;
+    return _instance!;
   }
 
   Future<String> createProfile(String firstName, String lastName) async {
+    if (_auth.currentUser == null) {
+      throw new Exception('Cant create profile without authenticated user.');
+    }
     cloud_firestore.CollectionReference profiles =
         _firestore.collection('profiles');
     await profiles
-        .doc('${_auth.currentUser.uid}')
+        .doc('${_auth.currentUser!.uid}')
         .set({firstName: firstName, lastName: lastName});
     await _preferences.setString(profileFirstNamePrefKey, firstName);
     await _preferences.setString(profileLastNamePrefKey, lastName);
     print('Added profile to the profiles collection.');
     notifyListeners();
-    return _auth.currentUser.uid;
+    return _auth.currentUser!.uid;
   }
 
   bool isProfileInitialized() {
