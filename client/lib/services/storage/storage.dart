@@ -6,18 +6,21 @@ import 'package:gonna_client/services/auth/auth.dart' as auth;
 class StorageService {
   final firebase_storage.FirebaseStorage _storage =
       firebase_storage.FirebaseStorage.instance;
-  static StorageService _instance;
+  static StorageService? _instance;
   final auth.AuthService _auth = auth.AuthService.instance;
 
   static StorageService get instance {
     if (_instance == null) {
       _instance = StorageService();
     }
-    return _instance;
+    return _instance!;
   }
 
   Future<void> uploadProfilePicture(File profilePicture) async {
-    await _storage.ref('profileImage/${_auth.currentUser.uid}').putFile(profilePicture);
+    if (_auth.currentUser == null) {
+      throw new Exception('Cant upload profile photo without authenticated user.');
+    }
+    await _storage.ref('profileImage/${_auth.currentUser!.uid}').putFile(profilePicture);
     print('Finished uploading the image');
   }
 }

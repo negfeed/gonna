@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_picker/flutter_picker.dart';
 
 class CreatePlanPage extends StatefulWidget {
-  CreatePlanPage({Key key}) : super(key: key);
+  CreatePlanPage({Key? key}) : super(key: key);
 
   @override
   _CreatePlanPageState createState() => _CreatePlanPageState();
@@ -30,55 +30,57 @@ class _CreatePlanPageState extends State<CreatePlanPage>
     }
   }
 
-  DateTime _date;
-  TimeOfDay _time;
-  Duration _duration;
-  int _durationPickedIndex;
+  DateTime? _date;
+  TimeOfDay? _time;
+  Duration? _duration;
+  int? _durationPickedIndex;
 
-  String _nameValidator(String value) {
-    if (value.length == 0) {
+  String? _nameValidator(String? value) {
+    if (value == null || value.length == 0) {
       return "Enter an event name.";
     }
     return null;
   }
 
-  String _dateValidator(String value) {
-    if (value.length == 0) {
+  String? _dateValidator(String? value) {
+    if (value == null || value.length == 0) {
       return "Choose a date.";
     }
     return null;
   }
 
-  String _timeValidator(String value) {
-    if (value.length == 0) {
+  String? _timeValidator(String? value) {
+    if (value == null || value.length == 0) {
       return "Choose a time.";
     }
+    assert(_date != null);
+    assert(_time != null);
     DateTime chosenDateTime = DateTime(
-        _date.year, _date.month, _date.day, _time.hour, _time.minute);
+        _date!.year, _date!.month, _date!.day, _time!.hour, _time!.minute);
     if (chosenDateTime.isBefore(DateTime.now())) {
       return "Choose a time in the future.";
     }
     return null;
   }
 
-  String _durationValidator(String value) {
-    if (value.length == 0) {
+  String? _durationValidator(String? value) {
+    if (value == null || value.length == 0) {
       return "Choose duration.";
     }
     return null;
   }
 
   void _onPublishPlan() {
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       print("Yay, validation passed!");
     }
   }
 
   Future<void> _showDatePicker() async {
     DateTime tomorrow = DateTime.now().add(Duration(days: 1));
-    DateTime initialDate = _date != null ? _date : tomorrow;
+    DateTime initialDate = _date ?? tomorrow;
     DateTime now = DateTime.now();
-    DateTime pickedDateTime = await showDatePicker(
+    DateTime? pickedDateTime = await showDatePicker(
         context: this.context,
         initialDate: initialDate,
         firstDate: initialDate.isBefore(now) ? initialDate : now,
@@ -92,9 +94,9 @@ class _CreatePlanPageState extends State<CreatePlanPage>
 
   Future<void> _showTimePicker() async {
     TimeOfDay noon = TimeOfDay(hour: 12, minute: 0);
-    TimeOfDay initialTime = _time != null ? _time : noon;
-    TimeOfDay pickedTime =
-    await showTimePicker(context: this.context, initialTime: initialTime);
+    TimeOfDay initialTime = _time ?? noon;
+    TimeOfDay? pickedTime =
+        await showTimePicker(context: this.context, initialTime: initialTime);
     if (pickedTime != null) {
       _time = pickedTime;
       _timeController.text =
@@ -103,14 +105,14 @@ class _CreatePlanPageState extends State<CreatePlanPage>
   }
 
   Future<void> _showDurationPicker() async {
-    var pickedIndex = _durationPickedIndex != null ? _durationPickedIndex : 0;
+    var pickedIndex = _durationPickedIndex??0;
     new Picker(
         selecteds: [pickedIndex],
         adapter: PickerDataAdapter<String>(pickerdata: _durationStrings),
         hideHeader: true,
         title: new Text("Select Duration"),
         onConfirm: (Picker picker, List value) {
-          _durationPickedIndex = picker.selecteds[0];
+          int _durationPickedIndex = picker.selecteds[0];
           _durationController.text = picker.getSelectedValues()[0];
           _duration = Duration(hours: _durations[_durationPickedIndex]);
           print(value.toString());
@@ -193,7 +195,7 @@ class _CreatePlanPageState extends State<CreatePlanPage>
             Container(
               padding: EdgeInsets.symmetric(vertical: 0, horizontal: 10.0),
               child:
-              new Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                  new Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
                 Flexible(
                   fit: FlexFit.loose,
                   child: TextFormField(

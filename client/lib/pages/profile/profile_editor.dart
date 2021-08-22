@@ -99,15 +99,15 @@ class _ProfileEditorPageState extends State<ProfileEditorPage> {
     );
   }
 
-  String _validateFirstName(String value) {
-    if (value.length == 0) {
+  String? _validateFirstName(String? value) {
+    if (value == null || value.length == 0) {
       return "Enter your first name.";
     }
     return null;
   }
 
-  String _validateLastName(String value) {
-    if (value.length == 0) {
+  String? _validateLastName(String? value) {
+    if (value == null || value.length == 0) {
       return "Enter your last name.";
     }
     return null;
@@ -115,7 +115,7 @@ class _ProfileEditorPageState extends State<ProfileEditorPage> {
 
   void _onCreateProfile() {
     bool errorsFound = false;
-    if (!_formKey.currentState.validate()) {
+    if (!_formKey.currentState!.validate()) {
       errorsFound = true;
     }
     if (_profilePictureController.value == null) {
@@ -127,7 +127,7 @@ class _ProfileEditorPageState extends State<ProfileEditorPage> {
     }
     print("Yay, validation passed!");
     try {
-      _createProfile(_profilePictureController.value,
+      _createProfile(_profilePictureController.value!,
           _firstNameController.value.text, _lastNameController.value.text);
     } on error.UserVisibleError catch (error) {
       error_dialog.showErrorDialog(context, error);
@@ -145,7 +145,7 @@ class _ProfileEditorPageState extends State<ProfileEditorPage> {
     } on error.UserVisibleError catch (uve) {
       throw uve;
     } catch (e) {
-      throw error.CatchAllError(e);
+      throw error.CatchAllError(e as Exception);
     }
   }
 }

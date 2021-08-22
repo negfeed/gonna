@@ -11,7 +11,7 @@ class ProfilePicture extends StatefulWidget {
   final ProfilePictureController controller;
   final ProfilePictureErrorController errorController;
 
-  ProfilePicture({this.controller, this.errorController});
+  ProfilePicture({required this.controller, required this.errorController});
 
   @override
   _ProfilePictureState createState() => _ProfilePictureState();
@@ -21,8 +21,8 @@ class _ProfilePictureState extends State<ProfilePicture>
     with SingleTickerProviderStateMixin {
   final picker = ImagePicker();
 
-  AnimationController _animationController;
-  Animation<Color> animation;
+  late AnimationController _animationController;
+  late Animation<Color?> animation;
 
   @override
   void initState() {
@@ -35,7 +35,7 @@ class _ProfilePictureState extends State<ProfilePicture>
       vsync: this,
     );
 
-    animation = TweenSequence<Color>([
+    animation = TweenSequence<Color?>([
       TweenSequenceItem(
         weight: 1.0,
         tween: ColorTween(
@@ -100,9 +100,9 @@ class _ProfilePictureState extends State<ProfilePicture>
     }
   }
 
-  File get _image => widget.controller.value;
+  File? get _image => widget.controller.value;
 
-  set _image(File value) {
+  set _image(File? value) {
     widget.controller.value = value;
   }
 
@@ -116,7 +116,7 @@ class _ProfilePictureState extends State<ProfilePicture>
           CircleAvatar(
             radius: 100,
             child: _image == null ? Text("Add a profile picture") : null,
-            backgroundImage: _image != null ? FileImage(_image) : null,
+            backgroundImage: _image != null ? FileImage(_image!) : null,
             backgroundColor: animation.value,
             foregroundColor: Colors.white,
           ),
@@ -142,7 +142,7 @@ class _ProfilePictureState extends State<ProfilePicture>
   }
 
   _cropImage(PickedFile pickedImage) async {
-    File cropped = await ImageCropper.cropImage(
+    File? cropped = await ImageCropper.cropImage(
       sourcePath: pickedImage.path,
       aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
       cropStyle: CropStyle.circle,
@@ -194,15 +194,15 @@ class _ProfilePictureState extends State<ProfilePicture>
   }
 }
 
-class ProfilePictureController extends ValueNotifier<File> {
+class ProfilePictureController extends ValueNotifier<File?> {
   ProfilePictureController() : super(null);
 
   ProfilePictureController.fromValue(File value) : super(value);
 
-  File get value => super.value;
+  File? get value => super.value;
 
   @override
-  set value(File newValue) {
+  set value(File? newValue) {
     super.value = newValue;
   }
 

@@ -6,34 +6,30 @@ enum Flavor {
 }
 
 class FlavorConfig {
-  static FlavorConfig instance;
+  static late FlavorConfig instance;
 
   // call this method from iniState() function of mainApp().
   static Future<FlavorConfig> init() async {
-    String flavorString = await const MethodChannel('flavor')
+    String? flavorString = await const MethodChannel('flavor')
         .invokeMethod<String>('getFlavor');
-    Flavor flavor;
-    if (flavorString == 'prod') {
+    late Flavor flavor;
+    if (flavorString == null) {
+      throw Exception('Could not fetch build flavor');
+    } else if (flavorString == 'prod') {
       flavor = Flavor.PROD;
     } else if (flavorString == 'sandbox') {
       flavor = Flavor.SANDBOX;
     } 
     
-    if (flavor == null) {
-      throw Exception('Undefined flavor $flavorString');
-    }
-
     instance = FlavorConfig(flavor, flavorString); 
     return instance;
   }
 
   Flavor flavor;
   String flavorString;
-  String functionsUrlBase;
+  late String functionsUrlBase;
 
-  FlavorConfig(Flavor flavor, String flavorString) {
-    this.flavor = flavor;
-    this.flavorString = flavorString;
+  FlavorConfig(this.flavor, this.flavorString) {
 
     switch (flavor) {
       case Flavor.PROD:

@@ -14,19 +14,22 @@ class PhoneFirestoreService extends foundation.ChangeNotifier {
   final shared_preferences.SharedPreferences _preferences =
       preference_util.PreferenceUtil.instance;
 
-  static PhoneFirestoreService _instance;
+  static PhoneFirestoreService? _instance;
 
   static PhoneFirestoreService get instance {
     if (_instance == null) {
       _instance = PhoneFirestoreService();
     }
-    return _instance;
+    return _instance!;
   }
 
   Future<void> createOrUpdatePhoneNumberProfileId() async {
-    assert(_auth.currentUser.getSignInProvider() == auth.SignInProvider.device);
-    var profileId = _auth.currentUser.uid;
-    var phoneNumber = _auth.currentUser.phoneNumber;
+    if (_auth.currentUser == null ||
+        _auth.currentUser!.getSignInProvider() != auth.SignInProvider.device) {
+      throw Exception('Current auth user should be a device authenticated user.');
+    }
+    var profileId = _auth.currentUser!.uid;
+    var phoneNumber = _auth.currentUser!.phoneNumber;
 
     cloud_firestore.CollectionReference phoneNumbers =
         _firestore.collection('phones');
@@ -35,7 +38,7 @@ class PhoneFirestoreService extends foundation.ChangeNotifier {
     var phoneDocRef = await phoneNumbers.doc(phoneNumber).get();
     Map<String, dynamic> phoneDoc = {};
     if (phoneDocRef.exists) {
-      phoneDoc = phoneDocRef.data();
+      phoneDoc = phoneDocRef.data() as Map<String, dynamic>;
     }
 
     // Update the phone number document.
@@ -47,7 +50,7 @@ class PhoneFirestoreService extends foundation.ChangeNotifier {
     // Update the local preference to indicate the directory update completed successfully.
     await _preferences.setBool(phoneDirectoryUpdatedPrefKey, true);
 
-    // Notify the app state service of the change, possibly indicating the 
+    // Notify the app state service of the change, possibly indicating the
     // home screen is ready to be displayed to the user.
     notifyListeners();
   }
@@ -62,6 +65,6 @@ class PhoneFirestoreService extends foundation.ChangeNotifier {
     if (!_preferences.containsKey(phoneDirectoryUpdatedPrefKey)) {
       return false;
     }
-    return _preferences.getBool(phoneDirectoryUpdatedPrefKey);
+    return _preferences.getBool(phoneDirectoryUpdatedPrefKey)??false;
   }
 }

@@ -6,7 +6,10 @@ class GonnaRouteInformationParser
   @override
   Future<GonnaRoutePath> parseRouteInformation(
       RouteInformation routeInformation) {
-    final uri = Uri.parse(routeInformation.location);
+    if (routeInformation.location == null) {
+      return Future.value(GonnaRoutePath.unknown());
+    }
+    final uri = Uri.parse(routeInformation.location!);
     // Handle '/'
     if (uri.pathSegments.length == 0) {
       return Future.value(GonnaRoutePath.home());

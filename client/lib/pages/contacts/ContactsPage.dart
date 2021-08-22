@@ -12,7 +12,7 @@ class ContactListItem extends StatelessWidget {
 
   ContactListItem(this.contact);
 
-  String _abbreviation(String displayName) {
+  String _abbreviation(String? displayName) {
     var abbreviation = "";
     if (displayName == null) {
       return abbreviation;
@@ -30,7 +30,7 @@ class ContactListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: (contact.avatar != null)
-          ? CircleAvatar(backgroundImage: MemoryImage(contact.avatar))
+          ? CircleAvatar(backgroundImage: MemoryImage(contact.avatar!))
           : CircleAvatar(
               child: Text(_abbreviation(contact.displayName),
                   style: TextStyle(color: Colors.white)),
@@ -47,7 +47,7 @@ class ContactsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> list = new List<Widget>();
+    List<Widget> list = [];
     for (var contact in contacts) {
       list.add(ContactListItem(contact));
       list.add(Divider(
@@ -72,7 +72,7 @@ class _ContactsPageState extends State<ContactsPage> {
     print("Checking contacts permission.");
     permission_handler.PermissionStatus permission =
         await permission_interface.Permission.contacts.status;
-    print("Contacts permission: ${permission}.");
+    print("Contacts permission: $permission.");
     if (permission == permission_handler.PermissionStatus.granted) {
       return;
     }
@@ -106,7 +106,7 @@ class _ContactsPageState extends State<ContactsPage> {
               AsyncSnapshot<Iterable<Contact>> snapshot) {
             List<Widget> noDataWidgets = [];
             if (snapshot.hasData) {
-              return ContactsList(snapshot.data);
+              return ContactsList(snapshot.data!);
             } else if (snapshot.hasError) {
               if (snapshot.error is AppContactsPermissionException) {
                 noDataWidgets.addAll([
