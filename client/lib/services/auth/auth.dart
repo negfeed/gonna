@@ -63,12 +63,12 @@ class User {
   }
 
   SignInProvider getSignInProvider() {
-    if (_idTokenResult!.signInProvider == 'phone') {
+    if (_idTokenResult.signInProvider == 'phone') {
       return SignInProvider.phone;
-    } else if (_idTokenResult!.signInProvider == 'custom' &&
-        _idTokenResult!.claims != null &&
-        _idTokenResult!.claims!.containsKey('gat') &&
-        _idTokenResult!.claims!['gat'] == 'device') {
+    } else if (_idTokenResult.signInProvider == 'custom' &&
+        _idTokenResult.claims != null &&
+        _idTokenResult.claims!.containsKey('gat') &&
+        _idTokenResult.claims!['gat'] == 'device') {
       return SignInProvider.device;
     }
     return SignInProvider.none;
@@ -213,7 +213,7 @@ class AuthService extends ChangeNotifier {
       throw new Exception("User is not signed in.");
     }
 
-    if (currentUser!.getSignInProvider() == SignInProvider.phone) {
+    if (currentUser!.getSignInProvider() != SignInProvider.phone) {
       throw new Exception("User must be signed in using a phone number to mint a device token.");
     }
 

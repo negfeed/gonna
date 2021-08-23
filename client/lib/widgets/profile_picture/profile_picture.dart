@@ -81,7 +81,7 @@ class _ProfilePictureState extends State<ProfilePicture>
 
   @override
   dispose() {
-    _animationController?.dispose();
+    _animationController.dispose();
     widget.controller.removeListener(_didChangeFileValue);
     widget.errorController.removeListener(_playErrorAnimation);
     super.dispose();
