@@ -10,16 +10,20 @@ class Database {
   static const schemaPatchesPath = '$schemaRootPath/patches';
   static const schemaPatchesIndexPath = '$schemaPatchesPath/index.txt';
 
-  static late sqflite.Database database;
+  static late sqflite.Database _instance;
+
+  static sqflite.Database get instance {
+    return _instance;
+  }
 
   static Future<sqflite.Database> init() async {
     var version = await _countPatches();
-    database = await sqflite.openDatabase('gonna.db',
+    _instance = await sqflite.openDatabase('gonna.db',
         onCreate: onCreate,
         onUpgrade: onUpgrade,
         onDowngrade: _onDowngrade,
         version: version);
-    return database;
+    return instance;
   }
 
   @foundation.visibleForTesting

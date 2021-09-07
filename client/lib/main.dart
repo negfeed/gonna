@@ -5,6 +5,7 @@ import 'package:gonna_client/pages/loading/GonnaLoadingPage.dart';
 import 'package:gonna_client/preference_util.dart';
 import 'package:gonna_client/routing/RouteInformationParser.dart';
 import 'package:gonna_client/routing/RouterDelegate.dart';
+import 'package:gonna_client/services/database/database.dart' as database;
 import 'package:gonna_client/services/flavor/flavor.dart';
 import 'package:gonna_client/theme_data.dart';
 
@@ -12,6 +13,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await PreferenceUtil.init();
   await FlavorConfig.init();
+  await database.Database.init();
   runApp(MyApp());
 }
 
