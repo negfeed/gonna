@@ -31,6 +31,10 @@ dependencies:
   firebase_storage: ^10.0.2
   cloud_firestore: ^2.5.0
 
+  # SQLite
+  sqflite: ^2.0.0+4
+  path: ^1.8.0
+
   provider: ^6.0.0
   contacts_service: ^0.6.1
   permission_handler: ^8.1.4+2
@@ -46,6 +50,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  test:
+  sqflite_common_ffi:
 
 
 # For information on the generic Dart part of this file, see the
@@ -62,6 +68,9 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   #  assets:
   #   - assets/memes/wait-a-minute-who-are-you.jpg
+  assets:
+    - lib/services/database/schema/
+    - lib/services/database/schema/patches/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
