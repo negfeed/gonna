@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' as foundation;
 import 'package:gonna_client/services/database/database.dart' as database;
+import 'package:quiver/core.dart' as quiver;
 import 'package:sqflite/sqflite.dart' as sqflite;
 
 final String contactsTable = 'contacts';
@@ -11,23 +13,23 @@ final String contactsFirstNameColumn = 'contacts_first_name';
 final String contactsLastNameColumn = 'contacts_last_name';
 final String profileFirstNameColumn = 'profile_first_name';
 final String profileLastNameColumn = 'profile_last_name';
-final String firstNameColumn = 'first_name';
-final String lastNameColumn = 'last_name';
 final String lastUpdatedTimestampColumn = 'last_updated_timestamp';
 
 class Contact {}
 
 class ContactRecord {
   late final String phoneNumber;
-  late final String contactsPhoneNumberType;
-  late final String profileId;
-  late final String contactsFirstName;
-  late final String contactsLastName;
-  late final String profileFirstName;
-  late final String profileLastName;
-  late final String firstName;
-  late final String lastName;
-  late final int lastUpdatedTimestamp;
+  late final String? contactsPhoneNumberType;
+  late final String? profileId;
+  late final String? contactsFirstName;
+  late final String? contactsLastName;
+  late final String? profileFirstName;
+  late final String? profileLastName;
+  int? _lastUpdatedTimestamp;
+
+  int? get lastUpdatedTimestamp {
+    return this._lastUpdatedTimestamp;
+  }
 
   static List<String> getColumns() {
     return List.of([
@@ -38,8 +40,6 @@ class ContactRecord {
       contactsLastNameColumn,
       profileFirstNameColumn,
       profileLastNameColumn,
-      firstNameColumn,
-      lastNameColumn,
       lastUpdatedTimestampColumn,
     ]);
   }
@@ -52,26 +52,56 @@ class ContactRecord {
       contactsFirstNameColumn: contactsFirstName,
       contactsLastNameColumn: contactsLastName,
       profileFirstNameColumn: profileFirstName,
-      profileLastNameColumn: profileLastName,
-      firstNameColumn: firstName,
-      lastNameColumn: lastName,
-      lastUpdatedTimestampColumn: lastUpdatedTimestamp
+      profileLastNameColumn: profileLastName
     };
     return map;
   }
 
+  T? tryCast<T>(dynamic object) => object is T ? object : null;
+
   ContactRecord.fromMap(Map<String, Object?> map) {
     phoneNumber = map[phoneNumberColumn] as String;
-    contactsPhoneNumberType = map[contactsFirstNameColumn] as String;
-    profileId = map[profileIdColumn] as String;
-    contactsFirstName = map[contactsFirstNameColumn] as String;
-    contactsLastName = map[contactsLastNameColumn] as String;
-    profileFirstName = map[profileFirstNameColumn] as String;
-    profileLastName = map[profileLastNameColumn] as String;
-    firstName = map[firstNameColumn] as String;
-    lastName = map[lastNameColumn] as String;
-    lastUpdatedTimestamp = map[lastUpdatedTimestampColumn] as int;
+    contactsPhoneNumberType = tryCast<String>(map[contactsPhoneNumberColumn]);
+    profileId = tryCast<String>(map[profileIdColumn]);
+    contactsFirstName = tryCast<String>(map[contactsFirstNameColumn]);
+    contactsLastName = tryCast<String>(map[contactsLastNameColumn]);
+    profileFirstName = tryCast<String>(map[profileFirstNameColumn]);
+    profileLastName = tryCast<String>(map[profileLastNameColumn]);
+    _lastUpdatedTimestamp = tryCast<int>(map[lastUpdatedTimestampColumn]);
   }
+
+  ContactRecord.create(this.phoneNumber,
+      {this.contactsPhoneNumberType,
+      this.profileId,
+      this.contactsFirstName,
+      this.contactsLastName,
+      this.profileFirstName,
+      this.profileLastName});
+
+  @override
+  bool operator ==(Object other) {
+    if (!(other is ContactRecord)) {
+      return false;
+    }
+    return phoneNumber == other.phoneNumber &&
+        contactsPhoneNumberType == other.contactsPhoneNumberType &&
+        profileId == other.profileId &&
+        contactsFirstName == other.contactsFirstName &&
+        contactsLastName == other.contactsLastName &&
+        profileFirstName == other.profileFirstName &&
+        profileLastName == other.profileLastName;
+  }
+
+  @override
+  int get hashCode => quiver.hashObjects([
+        phoneNumber,
+        contactsPhoneNumberType,
+        profileId,
+        contactsFirstName,
+        contactsLastName,
+        profileFirstName,
+        profileLastName
+      ]);
 }
 
 class ContactDatabase {
@@ -86,8 +116,10 @@ class ContactDatabase {
     return _instance!;
   }
 
-  void upsertContactRecord(ContactRecord contactRecord) async {
-    await _database.insert(contactsTable, contactRecord.toMap(),
+  Future<void> upsertContactRecord(ContactRecord contactRecord) async {
+    var contactRecordMap = contactRecord.toMap();
+    contactRecordMap[lastUpdatedTimestampColumn] = DateTime.now().millisecondsSinceEpoch;
+    await _database.insert(contactsTable, contactRecordMap,
         conflictAlgorithm: sqflite.ConflictAlgorithm.replace);
   }
 
@@ -101,6 +133,17 @@ class ContactDatabase {
         .query(contactsTable, columns: ContactRecord.getColumns())
         .then((listOfMaps) =>
             listOfMaps.map((map) => ContactRecord.fromMap(map)));
+  }
+
+  @foundation.visibleForTesting
+  Future<ContactRecord> readContactRecordByPhoneNumber(
+      String phoneNumber) async {
+    return _database.query(contactsTable,
+        columns: ContactRecord.getColumns(),
+        where: '$phoneNumberColumn = ?',
+        whereArgs: [
+          phoneNumber
+        ]).then((listOfOneMap) => ContactRecord.fromMap(listOfOneMap.single));
   }
 
   Stream<Contact> readContactByPhoneNumber(String phoneNumber) {

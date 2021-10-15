@@ -6,7 +6,5 @@ CREATE TABLE contacts (
   contacts_last_name TEXT,
   profile_first_name TEXT,
   profile_last_name TEXT,
-  first_name TEXT,
-  last_name TEXT,
   last_updated_timestamp INTEGER
 );
