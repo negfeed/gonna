@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart' as cloud_firestore;
 import 'package:flutter/foundation.dart' as foundation;
 import 'package:gonna_client/preference_util.dart' as preference_util;
 import 'package:gonna_client/services/auth/auth.dart' as auth;
+import 'package:gonna_client/services/firestore/profile.dart';
 import 'package:shared_preferences/shared_preferences.dart'
     as shared_preferences;
 
@@ -32,7 +33,7 @@ class ProfileFirestoreService extends foundation.ChangeNotifier {
         _firestore.collection('profiles');
     await profiles
         .doc('${_auth.currentUser!.uid}')
-        .set({firstName: firstName, lastName: lastName});
+        .set(Profile(firstName, lastName).toJson());
     await _preferences.setString(profileFirstNamePrefKey, firstName);
     await _preferences.setString(profileLastNamePrefKey, lastName);
     print('Added profile to the profiles collection.');

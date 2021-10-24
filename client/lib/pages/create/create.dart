@@ -140,7 +140,7 @@ class _CreatePlanPageState extends State<CreatePlanPage>
               child: TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Name',
-                  hasFloatingPlaceholder: true,
+                  floatingLabelBehavior: FloatingLabelBehavior.auto,
                   border: InputBorder.none,
                 ),
                 validator: _nameValidator,
@@ -152,7 +152,7 @@ class _CreatePlanPageState extends State<CreatePlanPage>
               child: TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Date',
-                  hasFloatingPlaceholder: true,
+                  floatingLabelBehavior: FloatingLabelBehavior.auto,
                   border: InputBorder.none,
                 ),
                 onTap: _showDatePicker,
@@ -167,7 +167,7 @@ class _CreatePlanPageState extends State<CreatePlanPage>
               child: TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Start Time',
-                  hasFloatingPlaceholder: true,
+                  floatingLabelBehavior: FloatingLabelBehavior.auto,
                   border: InputBorder.none,
                 ),
                 onTap: _showTimePicker,
@@ -182,7 +182,7 @@ class _CreatePlanPageState extends State<CreatePlanPage>
               child: TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Duration',
-                  hasFloatingPlaceholder: true,
+                  floatingLabelBehavior: FloatingLabelBehavior.auto,
                   border: InputBorder.none,
                 ),
                 onTap: _showDurationPicker,
@@ -201,7 +201,7 @@ class _CreatePlanPageState extends State<CreatePlanPage>
                   child: TextFormField(
                     decoration: InputDecoration(
                       labelText: 'Extra Notes',
-                      hasFloatingPlaceholder: true,
+                      floatingLabelBehavior: FloatingLabelBehavior.auto,
                       border: InputBorder.none,
                     ),
                     maxLines: null,
