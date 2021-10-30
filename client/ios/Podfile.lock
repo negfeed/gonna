@@ -466,6 +466,8 @@ PODS:
     - nanopb/encode (= 2.30908.0)
   - nanopb/decode (2.30908.0)
   - nanopb/encode (2.30908.0)
+  - path_provider (0.0.1):
+    - Flutter
   - "permission_handler (5.1.0+2)":
     - Flutter
   - PromisesObjC (2.0.0)
@@ -473,6 +475,24 @@ PODS:
     - Flutter
   - sms_autofill (0.0.1):
     - Flutter
+  - sqlite3 (3.36.0):
+    - sqlite3/common (= 3.36.0)
+  - sqlite3/common (3.36.0)
+  - sqlite3/fts5 (3.36.0):
+    - sqlite3/common
+  - sqlite3/json1 (3.36.0):
+    - sqlite3/common
+  - sqlite3/perf-threadsafe (3.36.0):
+    - sqlite3/common
+  - sqlite3/rtree (3.36.0):
+    - sqlite3/common
+  - sqlite3_flutter_libs (0.0.1):
+    - Flutter
+    - sqlite3 (~> 3.36.0)
+    - sqlite3/fts5
+    - sqlite3/json1
+    - sqlite3/perf-threadsafe
+    - sqlite3/rtree
   - TOCropViewController (2.6.0)
 
 DEPENDENCIES:
@@ -486,9 +506,11 @@ DEPENDENCIES:
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
   - libphonenumber (from `.symlinks/plugins/libphonenumber/ios`)
   - libphonenumber_plugin (from `.symlinks/plugins/libphonenumber_plugin/ios`)
+  - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - sms_autofill (from `.symlinks/plugins/sms_autofill/ios`)
+  - sqlite3_flutter_libs (from `.symlinks/plugins/sqlite3_flutter_libs/ios`)
 
 SPEC REPOS:
   trunk:
@@ -509,6 +531,7 @@ SPEC REPOS:
     - libPhoneNumber-iOS
     - nanopb
     - PromisesObjC
+    - sqlite3
     - TOCropViewController
 
 EXTERNAL SOURCES:
@@ -532,12 +555,16 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/libphonenumber/ios"
   libphonenumber_plugin:
     :path: ".symlinks/plugins/libphonenumber_plugin/ios"
+  path_provider:
+    :path: ".symlinks/plugins/path_provider/ios"
   permission_handler:
     :path: ".symlinks/plugins/permission_handler/ios"
   shared_preferences:
     :path: ".symlinks/plugins/shared_preferences/ios"
   sms_autofill:
     :path: ".symlinks/plugins/sms_autofill/ios"
+  sqlite3_flutter_libs:
+    :path: ".symlinks/plugins/sqlite3_flutter_libs/ios"
 
 SPEC CHECKSUMS:
   abseil: 6c8eb7892aefa08d929b39f9bb108e5367e3228f
@@ -566,10 +593,13 @@ SPEC CHECKSUMS:
   libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
   libphonenumber_plugin: 7cf755ad1656145935d6c208173a476bd3f12898
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
+  path_provider: d1e9807085df1f9cc9318206cd649dc0b76be3de
   permission_handler: ccb20a9fad0ee9b1314a52b70b76b473c5f8dab0
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   shared_preferences: 5033afbb22d372e15aff8ff766df9021b845f273
   sms_autofill: c461043483362c3f1709ee76eaae6eb570b31686
+  sqlite3: 797b1b1f92baf74716a3179f69d9652ce4a5df3f
+  sqlite3_flutter_libs: a1d040d0c9b60435b50e9626a9e818ddff842487
   TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
 
 PODFILE CHECKSUM: 2264c9591b46c93b238daf4ec8cf793d599715e9

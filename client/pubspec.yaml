@@ -43,12 +43,17 @@ dependencies:
   image_picker: ^0.8.3+2
   image_cropper: ^1.4.1
   json_annotation: ^4.3.0
+  drift: ^1.0.1
+  sqlite3_flutter_libs: ^0.5.1
+  path_provider: ^2.0.5
+  path: ^1.8.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: ^2.1.4
   json_serializable: ^6.0.1
+  drift_dev: ^1.0.2
 
 
 # For information on the generic Dart part of this file, see the
