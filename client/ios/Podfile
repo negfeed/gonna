@@ -37,5 +37,14 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+    # The following is part of the flutter-permission handler setup to declare
+    # which permissions are asked through the plugin. See https://bit.ly/3CLmrAp
+    # for more information.
+    target.build_configurations.each do |config|
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+        '$(inherited)',
+        'PERMISSION_CONTACTS=1',
+      ]
+    end
   end
 end

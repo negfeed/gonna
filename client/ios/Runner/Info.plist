@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSContactsUsageDescription</key>
+	<string>The app needs to access your contacts to discover the people in your network.</string>
 	<key>App - Flavor</key>
 	<string>$(APP_FLAVOR)</string>
 	<key>CFBundleDevelopmentRegion</key>
