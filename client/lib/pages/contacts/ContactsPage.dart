@@ -6,6 +6,8 @@ import 'package:permission_handler/permission_handler.dart'
     as permission_handler;
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart'
     as permission_interface;
+import 'package:gonna_client/services/contacts/contacts.dart'
+    as contacts_service;
 
 class ContactListItem extends StatelessWidget {
   final Contact contact;
@@ -68,25 +70,9 @@ class ContactsPage extends StatefulWidget {
 }
 
 class _ContactsPageState extends State<ContactsPage> {
-  _checkContactsPermissionAndMaybeRequestPermission() async {
-    print("Checking contacts permission.");
-    permission_handler.PermissionStatus permission =
-        await permission_interface.Permission.contacts.status;
-    print("Contacts permission: $permission.");
-    if (permission == permission_handler.PermissionStatus.granted) {
-      return;
-    }
-    print("Requesting contacts permission.");
-    permission_handler.PermissionStatus newPermssion =
-        await permission_interface.Permission.contacts.request();
-    if (newPermssion != permission_handler.PermissionStatus.granted) {
-      print("Requesting permissions didn't work!!! Throwing exception.");
-      throw new AppContactsPermissionException();
-    }
-  }
-
-  Future<Iterable<Contact>> _loadContacts() async {
-    await _checkContactsPermissionAndMaybeRequestPermission();
+  Future<Iterable<Contact>> _loadContacts(BuildContext context) async {
+    await contacts_service.ContactsService.instance
+        .requestContactsPermissionAndBlockProgressIfNotGiven(context);
     return ContactsService.getContacts();
   }
 
@@ -101,7 +87,7 @@ class _ContactsPageState extends State<ContactsPage> {
           title: Text('Contacts'),
         ),
         body: FutureBuilder<Iterable<Contact>>(
-          future: _loadContacts(),
+          future: _loadContacts(context),
           builder: (BuildContext context,
               AsyncSnapshot<Iterable<Contact>> snapshot) {
             List<Widget> noDataWidgets = [];
