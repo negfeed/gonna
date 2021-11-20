@@ -47,6 +47,7 @@ dependencies:
   sqlite3_flutter_libs: ^0.5.1
   path_provider: ^2.0.5
   path: ^1.8.0
+  flutter_libphonenumber: ^1.2.1
 
 dev_dependencies:
   flutter_test:
@@ -54,7 +55,7 @@ dev_dependencies:
   build_runner: ^2.1.4
   json_serializable: ^6.0.1
   drift_dev: ^1.0.2
-
+  test:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

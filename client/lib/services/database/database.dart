@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:gonna_client/services/database/app_state_dao.dart';
+import 'package:gonna_client/services/database/contacts_dao.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
@@ -32,18 +33,26 @@ class AppState extends Table {
 }
 
 class Contacts extends Table {
+  // Phone number stored in the E164 format.
   TextColumn get phoneNumber => text()();
-  TextColumn get contactsPhoneNumberType => text().nullable()();
-  TextColumn get profileId => text()();
-  TextColumn get contactsFirstName => text().nullable()();
-  TextColumn get contactsLastName => text().nullable()();
-  TextColumn get profileFirstName => text().nullable()();
-  TextColumn get profileLastName => text().nullable()();
-  IntColumn get creationTimestamp => integer()();
-  DateTimeColumn get lastUpdatedTimestamp => dateTime()();
+
+  // The profile ID associated with the contact.
+  TextColumn get profileId => text().nullable()();
+
+  // Contact's first name as it appears in the phone contacts.
+  TextColumn get firstName => text().nullable()();
+
+  // Contact's last name as it appears in the phone contacts.
+  TextColumn get lastName => text().nullable()();
+
+  // The time when this record was first created.
+  DateTimeColumn get creationTimestamp => dateTime().withDefault(currentDateAndTime)();
+
+  // The time when this record was last updated.
+  DateTimeColumn get lastSyncTimestamp => dateTime().nullable()();
 
   @override
-  Set<Column> get primaryKey => {phoneNumber, profileId};
+  Set<Column> get primaryKey => {phoneNumber};
 }
 
 LazyDatabase _openConnection() {
@@ -57,9 +66,10 @@ LazyDatabase _openConnection() {
   });
 }
 
-@DriftDatabase(tables: [AppState, Contacts], daos: [AppStateDao])
+@DriftDatabase(tables: [AppState, Contacts], daos: [AppStateDao, ContactsDao])
 class GonnaDatabase extends _$GonnaDatabase {
-  GonnaDatabase() : super(_openConnection());
+
+  GonnaDatabase(QueryExecutor e): super(e);
 
   static late GonnaDatabase _instance;
 
@@ -68,7 +78,7 @@ class GonnaDatabase extends _$GonnaDatabase {
   }
 
   static Future<void> init() async {
-    _instance = GonnaDatabase();
+    _instance = GonnaDatabase(_openConnection());
   }
 
   @override
