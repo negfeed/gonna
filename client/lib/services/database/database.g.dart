@@ -7,6 +7,499 @@ part of 'database.dart';
 // **************************************************************************
 
 // ignore_for_file: unnecessary_brace_in_string_interps, unnecessary_this
+class AppStateData extends DataClass implements Insertable<AppStateData> {
+  final int id;
+  final DateTime verificationStartTime;
+  final int? verificationTimeoutInSeconds;
+  final String? verificationId;
+  final int? resendToken;
+  final String? phoneNumber;
+  final bool? phoneNumberMappedToProfile;
+  final String? firstName;
+  final String? lastName;
+  AppStateData(
+      {required this.id,
+      required this.verificationStartTime,
+      this.verificationTimeoutInSeconds,
+      this.verificationId,
+      this.resendToken,
+      this.phoneNumber,
+      this.phoneNumberMappedToProfile,
+      this.firstName,
+      this.lastName});
+  factory AppStateData.fromData(Map<String, dynamic> data, {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return AppStateData(
+      id: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
+      verificationStartTime: const DateTimeType().mapFromDatabaseResponse(
+          data['${effectivePrefix}verification_start_time'])!,
+      verificationTimeoutInSeconds: const IntType().mapFromDatabaseResponse(
+          data['${effectivePrefix}verification_timeout_in_seconds']),
+      verificationId: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}verification_id']),
+      resendToken: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}resend_token']),
+      phoneNumber: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}phone_number']),
+      phoneNumberMappedToProfile: const BoolType().mapFromDatabaseResponse(
+          data['${effectivePrefix}phone_number_mapped_to_profile']),
+      firstName: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}first_name']),
+      lastName: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}last_name']),
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['verification_start_time'] = Variable<DateTime>(verificationStartTime);
+    if (!nullToAbsent || verificationTimeoutInSeconds != null) {
+      map['verification_timeout_in_seconds'] =
+          Variable<int?>(verificationTimeoutInSeconds);
+    }
+    if (!nullToAbsent || verificationId != null) {
+      map['verification_id'] = Variable<String?>(verificationId);
+    }
+    if (!nullToAbsent || resendToken != null) {
+      map['resend_token'] = Variable<int?>(resendToken);
+    }
+    if (!nullToAbsent || phoneNumber != null) {
+      map['phone_number'] = Variable<String?>(phoneNumber);
+    }
+    if (!nullToAbsent || phoneNumberMappedToProfile != null) {
+      map['phone_number_mapped_to_profile'] =
+          Variable<bool?>(phoneNumberMappedToProfile);
+    }
+    if (!nullToAbsent || firstName != null) {
+      map['first_name'] = Variable<String?>(firstName);
+    }
+    if (!nullToAbsent || lastName != null) {
+      map['last_name'] = Variable<String?>(lastName);
+    }
+    return map;
+  }
+
+  AppStateCompanion toCompanion(bool nullToAbsent) {
+    return AppStateCompanion(
+      id: Value(id),
+      verificationStartTime: Value(verificationStartTime),
+      verificationTimeoutInSeconds:
+          verificationTimeoutInSeconds == null && nullToAbsent
+              ? const Value.absent()
+              : Value(verificationTimeoutInSeconds),
+      verificationId: verificationId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(verificationId),
+      resendToken: resendToken == null && nullToAbsent
+          ? const Value.absent()
+          : Value(resendToken),
+      phoneNumber: phoneNumber == null && nullToAbsent
+          ? const Value.absent()
+          : Value(phoneNumber),
+      phoneNumberMappedToProfile:
+          phoneNumberMappedToProfile == null && nullToAbsent
+              ? const Value.absent()
+              : Value(phoneNumberMappedToProfile),
+      firstName: firstName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(firstName),
+      lastName: lastName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastName),
+    );
+  }
+
+  factory AppStateData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AppStateData(
+      id: serializer.fromJson<int>(json['id']),
+      verificationStartTime:
+          serializer.fromJson<DateTime>(json['verificationStartTime']),
+      verificationTimeoutInSeconds:
+          serializer.fromJson<int?>(json['verificationTimeoutInSeconds']),
+      verificationId: serializer.fromJson<String?>(json['verificationId']),
+      resendToken: serializer.fromJson<int?>(json['resendToken']),
+      phoneNumber: serializer.fromJson<String?>(json['phoneNumber']),
+      phoneNumberMappedToProfile:
+          serializer.fromJson<bool?>(json['phoneNumberMappedToProfile']),
+      firstName: serializer.fromJson<String?>(json['firstName']),
+      lastName: serializer.fromJson<String?>(json['lastName']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'verificationStartTime':
+          serializer.toJson<DateTime>(verificationStartTime),
+      'verificationTimeoutInSeconds':
+          serializer.toJson<int?>(verificationTimeoutInSeconds),
+      'verificationId': serializer.toJson<String?>(verificationId),
+      'resendToken': serializer.toJson<int?>(resendToken),
+      'phoneNumber': serializer.toJson<String?>(phoneNumber),
+      'phoneNumberMappedToProfile':
+          serializer.toJson<bool?>(phoneNumberMappedToProfile),
+      'firstName': serializer.toJson<String?>(firstName),
+      'lastName': serializer.toJson<String?>(lastName),
+    };
+  }
+
+  AppStateData copyWith(
+          {int? id,
+          DateTime? verificationStartTime,
+          int? verificationTimeoutInSeconds,
+          String? verificationId,
+          int? resendToken,
+          String? phoneNumber,
+          bool? phoneNumberMappedToProfile,
+          String? firstName,
+          String? lastName}) =>
+      AppStateData(
+        id: id ?? this.id,
+        verificationStartTime:
+            verificationStartTime ?? this.verificationStartTime,
+        verificationTimeoutInSeconds:
+            verificationTimeoutInSeconds ?? this.verificationTimeoutInSeconds,
+        verificationId: verificationId ?? this.verificationId,
+        resendToken: resendToken ?? this.resendToken,
+        phoneNumber: phoneNumber ?? this.phoneNumber,
+        phoneNumberMappedToProfile:
+            phoneNumberMappedToProfile ?? this.phoneNumberMappedToProfile,
+        firstName: firstName ?? this.firstName,
+        lastName: lastName ?? this.lastName,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('AppStateData(')
+          ..write('id: $id, ')
+          ..write('verificationStartTime: $verificationStartTime, ')
+          ..write(
+              'verificationTimeoutInSeconds: $verificationTimeoutInSeconds, ')
+          ..write('verificationId: $verificationId, ')
+          ..write('resendToken: $resendToken, ')
+          ..write('phoneNumber: $phoneNumber, ')
+          ..write('phoneNumberMappedToProfile: $phoneNumberMappedToProfile, ')
+          ..write('firstName: $firstName, ')
+          ..write('lastName: $lastName')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id,
+      verificationStartTime,
+      verificationTimeoutInSeconds,
+      verificationId,
+      resendToken,
+      phoneNumber,
+      phoneNumberMappedToProfile,
+      firstName,
+      lastName);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AppStateData &&
+          other.id == this.id &&
+          other.verificationStartTime == this.verificationStartTime &&
+          other.verificationTimeoutInSeconds ==
+              this.verificationTimeoutInSeconds &&
+          other.verificationId == this.verificationId &&
+          other.resendToken == this.resendToken &&
+          other.phoneNumber == this.phoneNumber &&
+          other.phoneNumberMappedToProfile == this.phoneNumberMappedToProfile &&
+          other.firstName == this.firstName &&
+          other.lastName == this.lastName);
+}
+
+class AppStateCompanion extends UpdateCompanion<AppStateData> {
+  final Value<int> id;
+  final Value<DateTime> verificationStartTime;
+  final Value<int?> verificationTimeoutInSeconds;
+  final Value<String?> verificationId;
+  final Value<int?> resendToken;
+  final Value<String?> phoneNumber;
+  final Value<bool?> phoneNumberMappedToProfile;
+  final Value<String?> firstName;
+  final Value<String?> lastName;
+  const AppStateCompanion({
+    this.id = const Value.absent(),
+    this.verificationStartTime = const Value.absent(),
+    this.verificationTimeoutInSeconds = const Value.absent(),
+    this.verificationId = const Value.absent(),
+    this.resendToken = const Value.absent(),
+    this.phoneNumber = const Value.absent(),
+    this.phoneNumberMappedToProfile = const Value.absent(),
+    this.firstName = const Value.absent(),
+    this.lastName = const Value.absent(),
+  });
+  AppStateCompanion.insert({
+    required int id,
+    required DateTime verificationStartTime,
+    this.verificationTimeoutInSeconds = const Value.absent(),
+    this.verificationId = const Value.absent(),
+    this.resendToken = const Value.absent(),
+    this.phoneNumber = const Value.absent(),
+    this.phoneNumberMappedToProfile = const Value.absent(),
+    this.firstName = const Value.absent(),
+    this.lastName = const Value.absent(),
+  })  : id = Value(id),
+        verificationStartTime = Value(verificationStartTime);
+  static Insertable<AppStateData> custom({
+    Expression<int>? id,
+    Expression<DateTime>? verificationStartTime,
+    Expression<int?>? verificationTimeoutInSeconds,
+    Expression<String?>? verificationId,
+    Expression<int?>? resendToken,
+    Expression<String?>? phoneNumber,
+    Expression<bool?>? phoneNumberMappedToProfile,
+    Expression<String?>? firstName,
+    Expression<String?>? lastName,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (verificationStartTime != null)
+        'verification_start_time': verificationStartTime,
+      if (verificationTimeoutInSeconds != null)
+        'verification_timeout_in_seconds': verificationTimeoutInSeconds,
+      if (verificationId != null) 'verification_id': verificationId,
+      if (resendToken != null) 'resend_token': resendToken,
+      if (phoneNumber != null) 'phone_number': phoneNumber,
+      if (phoneNumberMappedToProfile != null)
+        'phone_number_mapped_to_profile': phoneNumberMappedToProfile,
+      if (firstName != null) 'first_name': firstName,
+      if (lastName != null) 'last_name': lastName,
+    });
+  }
+
+  AppStateCompanion copyWith(
+      {Value<int>? id,
+      Value<DateTime>? verificationStartTime,
+      Value<int?>? verificationTimeoutInSeconds,
+      Value<String?>? verificationId,
+      Value<int?>? resendToken,
+      Value<String?>? phoneNumber,
+      Value<bool?>? phoneNumberMappedToProfile,
+      Value<String?>? firstName,
+      Value<String?>? lastName}) {
+    return AppStateCompanion(
+      id: id ?? this.id,
+      verificationStartTime:
+          verificationStartTime ?? this.verificationStartTime,
+      verificationTimeoutInSeconds:
+          verificationTimeoutInSeconds ?? this.verificationTimeoutInSeconds,
+      verificationId: verificationId ?? this.verificationId,
+      resendToken: resendToken ?? this.resendToken,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      phoneNumberMappedToProfile:
+          phoneNumberMappedToProfile ?? this.phoneNumberMappedToProfile,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (verificationStartTime.present) {
+      map['verification_start_time'] =
+          Variable<DateTime>(verificationStartTime.value);
+    }
+    if (verificationTimeoutInSeconds.present) {
+      map['verification_timeout_in_seconds'] =
+          Variable<int?>(verificationTimeoutInSeconds.value);
+    }
+    if (verificationId.present) {
+      map['verification_id'] = Variable<String?>(verificationId.value);
+    }
+    if (resendToken.present) {
+      map['resend_token'] = Variable<int?>(resendToken.value);
+    }
+    if (phoneNumber.present) {
+      map['phone_number'] = Variable<String?>(phoneNumber.value);
+    }
+    if (phoneNumberMappedToProfile.present) {
+      map['phone_number_mapped_to_profile'] =
+          Variable<bool?>(phoneNumberMappedToProfile.value);
+    }
+    if (firstName.present) {
+      map['first_name'] = Variable<String?>(firstName.value);
+    }
+    if (lastName.present) {
+      map['last_name'] = Variable<String?>(lastName.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AppStateCompanion(')
+          ..write('id: $id, ')
+          ..write('verificationStartTime: $verificationStartTime, ')
+          ..write(
+              'verificationTimeoutInSeconds: $verificationTimeoutInSeconds, ')
+          ..write('verificationId: $verificationId, ')
+          ..write('resendToken: $resendToken, ')
+          ..write('phoneNumber: $phoneNumber, ')
+          ..write('phoneNumberMappedToProfile: $phoneNumberMappedToProfile, ')
+          ..write('firstName: $firstName, ')
+          ..write('lastName: $lastName')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $AppStateTable extends AppState
+    with TableInfo<$AppStateTable, AppStateData> {
+  final GeneratedDatabase _db;
+  final String? _alias;
+  $AppStateTable(this._db, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+      'id', aliasedName, false,
+      typeName: 'INTEGER', requiredDuringInsert: true);
+  final VerificationMeta _verificationStartTimeMeta =
+      const VerificationMeta('verificationStartTime');
+  late final GeneratedColumn<DateTime?> verificationStartTime =
+      GeneratedColumn<DateTime?>('verification_start_time', aliasedName, false,
+          typeName: 'INTEGER', requiredDuringInsert: true);
+  final VerificationMeta _verificationTimeoutInSecondsMeta =
+      const VerificationMeta('verificationTimeoutInSeconds');
+  late final GeneratedColumn<int?> verificationTimeoutInSeconds =
+      GeneratedColumn<int?>(
+          'verification_timeout_in_seconds', aliasedName, true,
+          typeName: 'INTEGER', requiredDuringInsert: false);
+  final VerificationMeta _verificationIdMeta =
+      const VerificationMeta('verificationId');
+  late final GeneratedColumn<String?> verificationId = GeneratedColumn<String?>(
+      'verification_id', aliasedName, true,
+      typeName: 'TEXT', requiredDuringInsert: false);
+  final VerificationMeta _resendTokenMeta =
+      const VerificationMeta('resendToken');
+  late final GeneratedColumn<int?> resendToken = GeneratedColumn<int?>(
+      'resend_token', aliasedName, true,
+      typeName: 'INTEGER', requiredDuringInsert: false);
+  final VerificationMeta _phoneNumberMeta =
+      const VerificationMeta('phoneNumber');
+  late final GeneratedColumn<String?> phoneNumber = GeneratedColumn<String?>(
+      'phone_number', aliasedName, true,
+      typeName: 'TEXT', requiredDuringInsert: false);
+  final VerificationMeta _phoneNumberMappedToProfileMeta =
+      const VerificationMeta('phoneNumberMappedToProfile');
+  late final GeneratedColumn<bool?> phoneNumberMappedToProfile =
+      GeneratedColumn<bool?>(
+          'phone_number_mapped_to_profile', aliasedName, true,
+          typeName: 'INTEGER',
+          requiredDuringInsert: false,
+          defaultConstraints:
+              'CHECK (phone_number_mapped_to_profile IN (0, 1))',
+          defaultValue: const Constant(false));
+  final VerificationMeta _firstNameMeta = const VerificationMeta('firstName');
+  late final GeneratedColumn<String?> firstName = GeneratedColumn<String?>(
+      'first_name', aliasedName, true,
+      typeName: 'TEXT', requiredDuringInsert: false);
+  final VerificationMeta _lastNameMeta = const VerificationMeta('lastName');
+  late final GeneratedColumn<String?> lastName = GeneratedColumn<String?>(
+      'last_name', aliasedName, true,
+      typeName: 'TEXT', requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        verificationStartTime,
+        verificationTimeoutInSeconds,
+        verificationId,
+        resendToken,
+        phoneNumber,
+        phoneNumberMappedToProfile,
+        firstName,
+        lastName
+      ];
+  @override
+  String get aliasedName => _alias ?? 'app_state';
+  @override
+  String get actualTableName => 'app_state';
+  @override
+  VerificationContext validateIntegrity(Insertable<AppStateData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('verification_start_time')) {
+      context.handle(
+          _verificationStartTimeMeta,
+          verificationStartTime.isAcceptableOrUnknown(
+              data['verification_start_time']!, _verificationStartTimeMeta));
+    } else if (isInserting) {
+      context.missing(_verificationStartTimeMeta);
+    }
+    if (data.containsKey('verification_timeout_in_seconds')) {
+      context.handle(
+          _verificationTimeoutInSecondsMeta,
+          verificationTimeoutInSeconds.isAcceptableOrUnknown(
+              data['verification_timeout_in_seconds']!,
+              _verificationTimeoutInSecondsMeta));
+    }
+    if (data.containsKey('verification_id')) {
+      context.handle(
+          _verificationIdMeta,
+          verificationId.isAcceptableOrUnknown(
+              data['verification_id']!, _verificationIdMeta));
+    }
+    if (data.containsKey('resend_token')) {
+      context.handle(
+          _resendTokenMeta,
+          resendToken.isAcceptableOrUnknown(
+              data['resend_token']!, _resendTokenMeta));
+    }
+    if (data.containsKey('phone_number')) {
+      context.handle(
+          _phoneNumberMeta,
+          phoneNumber.isAcceptableOrUnknown(
+              data['phone_number']!, _phoneNumberMeta));
+    }
+    if (data.containsKey('phone_number_mapped_to_profile')) {
+      context.handle(
+          _phoneNumberMappedToProfileMeta,
+          phoneNumberMappedToProfile.isAcceptableOrUnknown(
+              data['phone_number_mapped_to_profile']!,
+              _phoneNumberMappedToProfileMeta));
+    }
+    if (data.containsKey('first_name')) {
+      context.handle(_firstNameMeta,
+          firstName.isAcceptableOrUnknown(data['first_name']!, _firstNameMeta));
+    }
+    if (data.containsKey('last_name')) {
+      context.handle(_lastNameMeta,
+          lastName.isAcceptableOrUnknown(data['last_name']!, _lastNameMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
+  @override
+  AppStateData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return AppStateData.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $AppStateTable createAlias(String alias) {
+    return $AppStateTable(_db, alias);
+  }
+}
+
 class Contact extends DataClass implements Insertable<Contact> {
   final String phoneNumber;
   final String? contactsPhoneNumberType;
@@ -483,11 +976,13 @@ class $ContactsTable extends Contacts with TableInfo<$ContactsTable, Contact> {
   }
 }
 
-abstract class _$Database extends GeneratedDatabase {
-  _$Database(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
+abstract class _$GonnaDatabase extends GeneratedDatabase {
+  _$GonnaDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
+  late final $AppStateTable appState = $AppStateTable(this);
   late final $ContactsTable contacts = $ContactsTable(this);
+  late final AppStateDao appStateDao = AppStateDao(this as GonnaDatabase);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [contacts];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [appState, contacts];
 }

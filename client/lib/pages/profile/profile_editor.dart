@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:gonna_client/services/auth/auth.dart';
+import 'package:gonna_client/services/database/app_state_dao.dart'
+    as app_state_dao;
 import 'package:gonna_client/services/error.dart' as error;
 import 'package:gonna_client/services/firestore/profile_firestore.dart' as profile_firestore;
 import 'package:gonna_client/services/firestore/phone_firestore.dart' as phone_firestore;
@@ -113,7 +115,7 @@ class _ProfileEditorPageState extends State<ProfileEditorPage> {
     return null;
   }
 
-  void _onCreateProfile() {
+  void _onCreateProfile() async {
     bool errorsFound = false;
     if (!_formKey.currentState!.validate()) {
       errorsFound = true;
@@ -127,7 +129,7 @@ class _ProfileEditorPageState extends State<ProfileEditorPage> {
     }
     print("Yay, validation passed!");
     try {
-      _createProfile(_profilePictureController.value!,
+      await _createProfile(_profilePictureController.value!,
           _firstNameController.value.text, _lastNameController.value.text);
     } on error.UserVisibleError catch (error) {
       error_dialog.showErrorDialog(context, error);
@@ -136,12 +138,14 @@ class _ProfileEditorPageState extends State<ProfileEditorPage> {
 
   // TODO: Consider moving this method to a service class.
   // TODO: Consider applying the try/on/catch stanza systematically (code generation??).
-  void _createProfile(File profilePicture, String firstName, String lastName) async {
+  Future<void> _createProfile(File profilePicture, String firstName, String lastName) async {
     try {
       await AuthService.instance.maybeCreateAndSignInUsingDeviceAccount();
       await StorageService.instance.uploadProfilePicture(profilePicture);
       await profile_firestore.ProfileFirestoreService.instance.createProfile(firstName, lastName);
+      await app_state_dao.AppStateDao.instance.setProfileData(firstName, lastName);
       await phone_firestore.PhoneFirestoreService.instance.createOrUpdatePhoneNumberProfileId();
+      await app_state_dao.AppStateDao.instance.markPhoneNumberAsMappedToProfile();
     } on error.UserVisibleError catch (uve) {
       throw uve;
     } catch (e) {

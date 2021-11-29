@@ -29,7 +29,7 @@ class PhoneFirestoreService extends foundation.ChangeNotifier {
       throw Exception('Current auth user should be a device authenticated user.');
     }
     var profileId = _auth.currentUser!.uid;
-    var phoneNumber = _auth.currentUser!.phoneNumber;
+    var phoneNumber = _auth.currentUser!.phoneNumber!;
 
     cloud_firestore.CollectionReference phoneNumbers =
         _firestore.collection('phones');

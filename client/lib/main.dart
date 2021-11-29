@@ -13,7 +13,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await PreferenceUtil.init();
   await FlavorConfig.init();
-  await database.init();
+  await database.GonnaDatabase.init();
   runApp(MyApp());
 }
 
