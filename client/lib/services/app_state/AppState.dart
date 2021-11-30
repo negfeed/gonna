@@ -26,9 +26,26 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  _persistedAppStateChangeHandler(database.AppStateData? appStateData) {
-    this.appStateData = appStateData;
+  _persistedAppStateChangeHandler(
+      database.AppStateData? newAppStateData) async {
+    appStateData = newAppStateData;
+
+    // If the user hit the profile creation editor, exchanged their phone sign in
+    // token for a device sign in token and the device token went stale (can't be
+    // used to update phone directory). The user should be signed out to throw
+    // them back to the initial phone verification page. Also suppress notifying
+    // the router as a subsequent notification is imminent due to the impending 
+    // sign out.
+    if (!isProfileInitialized() && _isUserLoggedInWithStaleDeviceToken()) {
+      await _authService.signOut();
+      return;
+    }
     notifyListeners();
+  }
+
+  bool _isUserLoggedInWithStaleDeviceToken() {
+    return user?.getSignInProvider() == auth.SignInProvider.device &&
+        !(user!.isDeviceSignInTokenFresh());
   }
 
   bool isCodeSent() {

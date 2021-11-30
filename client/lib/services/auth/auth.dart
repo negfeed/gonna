@@ -176,12 +176,12 @@ class AuthService extends ChangeNotifier {
     });
   }
 
-  void signOut() async {
+  Future<void> signOut() async {
     await _auth.signOut();
     await app_state_dao.AppStateDao.instance.reset();
   }
 
-  void deleteAccount() async {
+  Future<void> deleteAccount() async {
     await _auth.currentUser?.delete();
     await app_state_dao.AppStateDao.instance.reset();
   }
