@@ -9,10 +9,11 @@ part 'profile.g.dart';
 /// JSON serialization logic to be generated.
 @JsonSerializable()
 class Profile {
-  Profile(this.firstName, this.lastName);
+  Profile(this.firstName, this.lastName, {this.isPhoneDirectoryInitialized});
 
   String firstName;
   String lastName;
+  bool? isPhoneDirectoryInitialized;
 
   /// A necessary factory constructor for creating a new User instance
   /// from a map. Pass the map to the generated `_$UserFromJson()` constructor.

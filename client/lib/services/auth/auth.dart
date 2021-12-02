@@ -4,15 +4,14 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:gonna_client/preference_util.dart';
+import 'package:gonna_client/services/database/app_state_dao.dart'
+    as app_state_dao;
 import 'package:gonna_client/services/error.dart';
 import 'package:gonna_client/services/flavor/flavor.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-const verificationIdPrefKey = "auth-verificationId";
-const resendTokenPrefKey = "auth-resendToken";
-const phoneNumberPrefKey = "auth-phoneNumber";
-
+const verificationTimeoutInSeconds = 60;
 const createDeviceAccountPath = 'createDeviceAccount';
 
 enum VerificationResult { codeSent, verificationCompleted }
@@ -51,11 +50,10 @@ class User {
     return _firebaseUser.uid;
   }
 
-  String get phoneNumber {
-    if (getSignInProvider() != SignInProvider.device) {
-      throw new Exception('This getter should only be used with device users.');
+  String? get phoneNumber {
+    if (getSignInProvider() == SignInProvider.device) {
+      return _idTokenResult.claims!['phoneNumber'];
     }
-    return _idTokenResult.claims!['phoneNumber'];
   }
 
   Future<String> getIdToken() async {
@@ -72,6 +70,13 @@ class User {
       return SignInProvider.device;
     }
     return SignInProvider.none;
+  }
+
+  bool isDeviceSignInTokenFresh() {
+    return getSignInProvider() == SignInProvider.device &&
+        _firebaseUser.metadata.creationTime!
+            .add(Duration(minutes: 8))
+            .isAfter(DateTime.now());
   }
 }
 
@@ -95,12 +100,11 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<VerificationResult> verifyPhoneNumber(String phoneNumber) async {
-    await _preferences.setString(phoneNumberPrefKey, phoneNumber);
-
     Completer<VerificationResult> _completer = new Completer();
 
     firebase_auth.FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: phoneNumber,
+        timeout: Duration(seconds: verificationTimeoutInSeconds),
         verificationCompleted: (firebase_auth.PhoneAuthCredential credentials) {
           print("Verification completed.");
           _onVerificationCompleted(credentials, _completer);
@@ -117,6 +121,9 @@ class AuthService extends ChangeNotifier {
           print("Code auto retrieval timeout: $verificationId");
         });
 
+    await app_state_dao.AppStateDao.instance.markPhoneVerificationStarted(
+        phoneNumber, verificationTimeoutInSeconds);
+
     return _completer.future;
   }
 
@@ -129,39 +136,17 @@ class AuthService extends ChangeNotifier {
 
   void _onCodeSent(
       String verificationId, int? resendToken, Completer completer) async {
-    await _preferences.setString(verificationIdPrefKey, verificationId);
-    if (resendToken != null) {
-      await _preferences.setInt(resendTokenPrefKey, resendToken);
-    }
+    await app_state_dao.AppStateDao.instance
+        .setVerificationId(verificationId, resendToken);
+
     completer.complete(VerificationResult.verificationCompleted);
     notifyListeners();
   }
 
-  bool isCodeSent() {
-    if (_preferences.containsKey(verificationIdPrefKey)) {
-      return true;
-    }
-    return false;
-  }
-
-  void _undoCodeSent() async {
-    if (_preferences.containsKey(verificationIdPrefKey)) {
-      await _preferences.remove(verificationIdPrefKey);
-    }
-    if (_preferences.containsKey(resendTokenPrefKey)) {
-      await _preferences.remove(resendTokenPrefKey);
-    }
-  }
-
-  void undoCodeSent() {
-    _undoCodeSent();
-    notifyListeners();
-  }
-
   Future submitSmsCode(String smsCode) async {
-    var verificationId = _preferences.getString(verificationIdPrefKey);
+    var verificationId = await app_state_dao.AppStateDao.instance.getVerificationId();
     var credential = PhoneAuthProvider.credential(
-        verificationId: verificationId!, smsCode: smsCode);
+        verificationId: verificationId, smsCode: smsCode);
     try {
       await _auth.signInWithCredential(credential);
     } on firebase_auth.FirebaseAuthException catch (e) {
@@ -171,24 +156,19 @@ class AuthService extends ChangeNotifier {
   }
 
   void _registerCurrentUserChanges() {
-    _currentUserChanges().listen(_handleCurrentUserChanges);
+    currentUserChanges().listen(_handleCurrentUserChanges);
   }
 
   void _handleCurrentUserChanges(User? user) {
     print('User change');
-    print('New user: $user\n');
-    print('Old user: $currentUser\n');
-    // Notify the app state of change if the user switched from a logged in state to a logged out state or
-    // the other way around. We don't need to notify the app state of any change when the logged in user
-    // switches from the phone login provider to the device custom login provider.
-    if (user == null && currentUser != null ||
-        user != null && currentUser == null) {
-      notifyListeners();
-    }
+    print('New user: $user, phoneNumber: ${user?.phoneNumber}, '
+        'uid: ${user?.uid}, signInProvider: ${user?.getSignInProvider()}');
+    print('Old user: $currentUser, phoneNumber: ${currentUser?.phoneNumber}, '
+        'uid: ${currentUser?.uid}, signInProvider: ${currentUser?.getSignInProvider()}');
     currentUser = user;
   }
 
-  Stream<User?> _currentUserChanges() {
+  Stream<User?> currentUserChanges() {
     return _auth.authStateChanges().asyncMap((firebaseUser) {
       return firebaseUser
           ?.getIdTokenResult()
@@ -196,25 +176,25 @@ class AuthService extends ChangeNotifier {
     });
   }
 
-  void signOut() async {
-    _undoCodeSent();
+  Future<void> signOut() async {
     await _auth.signOut();
+    await app_state_dao.AppStateDao.instance.reset();
   }
 
-  void deleteAccount() async {
-    _undoCodeSent();
+  Future<void> deleteAccount() async {
     await _auth.currentUser?.delete();
+    await app_state_dao.AppStateDao.instance.reset();
   }
 
   // Creates a device account if it has not been created yet, and signs into that device account.
   Future<void> maybeCreateAndSignInUsingDeviceAccount() async {
-
     if (currentUser == null) {
       throw new Exception("User is not signed in.");
-    }
-
-    if (currentUser!.getSignInProvider() != SignInProvider.phone) {
-      throw new Exception("User must be signed in using a phone number to mint a device token.");
+    } else if (currentUser!.getSignInProvider() == SignInProvider.device) {
+      return;
+    } else if (currentUser!.getSignInProvider() != SignInProvider.phone) {
+      throw new Exception(
+          "User must be signed in using a phone number to mint a device token.");
     }
 
     print("Create device account.");
@@ -231,7 +211,7 @@ class AuthService extends ChangeNotifier {
     // be associated with the phone account rather than the device account. This
     // block will prevent returning from this method until the authenticated user
     // has switched from phone account to device account.
-    await for (User? user in _currentUserChanges()) {
+    await for (User? user in currentUserChanges()) {
       if (user != null && user.getSignInProvider() == SignInProvider.device) {
         return;
       }
