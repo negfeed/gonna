@@ -4,6 +4,7 @@ import 'package:gonna_client/preference_util.dart' as preference_util;
 import 'package:gonna_client/services/auth/auth.dart' as auth;
 import 'package:shared_preferences/shared_preferences.dart'
     as shared_preferences;
+import 'package:gonna_client/services/firestore/phone.dart';
 
 const phoneDirectoryUpdatedPrefKey = "phone-phoneDirectoryUpdated";
 
@@ -26,7 +27,8 @@ class PhoneFirestoreService extends foundation.ChangeNotifier {
   Future<void> createOrUpdatePhoneNumberProfileId() async {
     if (_auth.currentUser == null ||
         _auth.currentUser!.getSignInProvider() != auth.SignInProvider.device) {
-      throw Exception('Current auth user should be a device authenticated user.');
+      throw Exception(
+          'Current auth user should be a device authenticated user.');
     }
     var profileId = _auth.currentUser!.uid;
     var phoneNumber = _auth.currentUser!.phoneNumber!;
@@ -36,16 +38,16 @@ class PhoneFirestoreService extends foundation.ChangeNotifier {
 
     // Read phone number document.
     var phoneDocRef = await phoneNumbers.doc(phoneNumber).get();
-    Map<String, dynamic> phoneDoc = {};
+    Phone phoneDoc = Phone();
     if (phoneDocRef.exists) {
-      phoneDoc = phoneDocRef.data() as Map<String, dynamic>;
+      phoneDoc = Phone.fromJson(phoneDocRef.data() as Map<String, dynamic>);
     }
 
     // Update the phone number document.
-    phoneDoc['profileId'] = profileId;
+    phoneDoc.profileId = profileId;
 
     // Write the updated phone number document.
-    await phoneNumbers.doc(phoneNumber).set(phoneDoc);
+    await phoneNumbers.doc(phoneNumber).set(phoneDoc.toJson());
 
     // Update the local preference to indicate the directory update completed successfully.
     await _preferences.setBool(phoneDirectoryUpdatedPrefKey, true);
@@ -55,16 +57,23 @@ class PhoneFirestoreService extends foundation.ChangeNotifier {
     notifyListeners();
   }
 
-  Map<String, String> resolvePhoneNumbersToProfileIds(
-      List<String> phoneNumbers) {
-    // TODO(mshamma): Implement.
-    return {};
+  Future<Map<String, String>> resolvePhoneNumbersToProfileIds(
+      List<String> phoneNumbers) async {
+    return _firestore
+        .collection('phones')
+        .where('__name__', whereIn: phoneNumbers)
+        .get()
+        .then((querySnapshot) => Map.fromIterable(
+            querySnapshot.docs
+                .where((d) => Phone.fromJson(d.data()).profileId != null),
+            key: (d) => d.id,
+            value: (d) => Phone.fromJson(d.data()).profileId!));
   }
 
   bool isPhoneDirectoryUpdated() {
     if (!_preferences.containsKey(phoneDirectoryUpdatedPrefKey)) {
       return false;
     }
-    return _preferences.getBool(phoneDirectoryUpdatedPrefKey)??false;
+    return _preferences.getBool(phoneDirectoryUpdatedPrefKey) ?? false;
   }
 }

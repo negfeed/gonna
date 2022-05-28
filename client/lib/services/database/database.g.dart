@@ -502,94 +502,71 @@ class $AppStateTable extends AppState
 
 class Contact extends DataClass implements Insertable<Contact> {
   final String phoneNumber;
-  final String? contactsPhoneNumberType;
-  final String profileId;
-  final String? contactsFirstName;
-  final String? contactsLastName;
-  final String? profileFirstName;
-  final String? profileLastName;
-  final int creationTimestamp;
-  final DateTime lastUpdatedTimestamp;
+  final String? profileId;
+  final String? firstName;
+  final String? lastName;
+  final DateTime creationTimestamp;
+  final DateTime? lastSyncTimestamp;
   Contact(
       {required this.phoneNumber,
-      this.contactsPhoneNumberType,
-      required this.profileId,
-      this.contactsFirstName,
-      this.contactsLastName,
-      this.profileFirstName,
-      this.profileLastName,
+      this.profileId,
+      this.firstName,
+      this.lastName,
       required this.creationTimestamp,
-      required this.lastUpdatedTimestamp});
+      this.lastSyncTimestamp});
   factory Contact.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return Contact(
       phoneNumber: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}phone_number'])!,
-      contactsPhoneNumberType: const StringType().mapFromDatabaseResponse(
-          data['${effectivePrefix}contacts_phone_number_type']),
       profileId: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}profile_id'])!,
-      contactsFirstName: const StringType().mapFromDatabaseResponse(
-          data['${effectivePrefix}contacts_first_name']),
-      contactsLastName: const StringType().mapFromDatabaseResponse(
-          data['${effectivePrefix}contacts_last_name']),
-      profileFirstName: const StringType().mapFromDatabaseResponse(
-          data['${effectivePrefix}profile_first_name']),
-      profileLastName: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}profile_last_name']),
-      creationTimestamp: const IntType().mapFromDatabaseResponse(
+          .mapFromDatabaseResponse(data['${effectivePrefix}profile_id']),
+      firstName: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}first_name']),
+      lastName: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}last_name']),
+      creationTimestamp: const DateTimeType().mapFromDatabaseResponse(
           data['${effectivePrefix}creation_timestamp'])!,
-      lastUpdatedTimestamp: const DateTimeType().mapFromDatabaseResponse(
-          data['${effectivePrefix}last_updated_timestamp'])!,
+      lastSyncTimestamp: const DateTimeType().mapFromDatabaseResponse(
+          data['${effectivePrefix}last_sync_timestamp']),
     );
   }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['phone_number'] = Variable<String>(phoneNumber);
-    if (!nullToAbsent || contactsPhoneNumberType != null) {
-      map['contacts_phone_number_type'] =
-          Variable<String?>(contactsPhoneNumberType);
+    if (!nullToAbsent || profileId != null) {
+      map['profile_id'] = Variable<String?>(profileId);
     }
-    map['profile_id'] = Variable<String>(profileId);
-    if (!nullToAbsent || contactsFirstName != null) {
-      map['contacts_first_name'] = Variable<String?>(contactsFirstName);
+    if (!nullToAbsent || firstName != null) {
+      map['first_name'] = Variable<String?>(firstName);
     }
-    if (!nullToAbsent || contactsLastName != null) {
-      map['contacts_last_name'] = Variable<String?>(contactsLastName);
+    if (!nullToAbsent || lastName != null) {
+      map['last_name'] = Variable<String?>(lastName);
     }
-    if (!nullToAbsent || profileFirstName != null) {
-      map['profile_first_name'] = Variable<String?>(profileFirstName);
+    map['creation_timestamp'] = Variable<DateTime>(creationTimestamp);
+    if (!nullToAbsent || lastSyncTimestamp != null) {
+      map['last_sync_timestamp'] = Variable<DateTime?>(lastSyncTimestamp);
     }
-    if (!nullToAbsent || profileLastName != null) {
-      map['profile_last_name'] = Variable<String?>(profileLastName);
-    }
-    map['creation_timestamp'] = Variable<int>(creationTimestamp);
-    map['last_updated_timestamp'] = Variable<DateTime>(lastUpdatedTimestamp);
     return map;
   }
 
   ContactsCompanion toCompanion(bool nullToAbsent) {
     return ContactsCompanion(
       phoneNumber: Value(phoneNumber),
-      contactsPhoneNumberType: contactsPhoneNumberType == null && nullToAbsent
+      profileId: profileId == null && nullToAbsent
           ? const Value.absent()
-          : Value(contactsPhoneNumberType),
-      profileId: Value(profileId),
-      contactsFirstName: contactsFirstName == null && nullToAbsent
+          : Value(profileId),
+      firstName: firstName == null && nullToAbsent
           ? const Value.absent()
-          : Value(contactsFirstName),
-      contactsLastName: contactsLastName == null && nullToAbsent
+          : Value(firstName),
+      lastName: lastName == null && nullToAbsent
           ? const Value.absent()
-          : Value(contactsLastName),
-      profileFirstName: profileFirstName == null && nullToAbsent
-          ? const Value.absent()
-          : Value(profileFirstName),
-      profileLastName: profileLastName == null && nullToAbsent
-          ? const Value.absent()
-          : Value(profileLastName),
+          : Value(lastName),
       creationTimestamp: Value(creationTimestamp),
-      lastUpdatedTimestamp: Value(lastUpdatedTimestamp),
+      lastSyncTimestamp: lastSyncTimestamp == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncTimestamp),
     );
   }
 
@@ -598,17 +575,13 @@ class Contact extends DataClass implements Insertable<Contact> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Contact(
       phoneNumber: serializer.fromJson<String>(json['phoneNumber']),
-      contactsPhoneNumberType:
-          serializer.fromJson<String?>(json['contactsPhoneNumberType']),
-      profileId: serializer.fromJson<String>(json['profileId']),
-      contactsFirstName:
-          serializer.fromJson<String?>(json['contactsFirstName']),
-      contactsLastName: serializer.fromJson<String?>(json['contactsLastName']),
-      profileFirstName: serializer.fromJson<String?>(json['profileFirstName']),
-      profileLastName: serializer.fromJson<String?>(json['profileLastName']),
-      creationTimestamp: serializer.fromJson<int>(json['creationTimestamp']),
-      lastUpdatedTimestamp:
-          serializer.fromJson<DateTime>(json['lastUpdatedTimestamp']),
+      profileId: serializer.fromJson<String?>(json['profileId']),
+      firstName: serializer.fromJson<String?>(json['firstName']),
+      lastName: serializer.fromJson<String?>(json['lastName']),
+      creationTimestamp:
+          serializer.fromJson<DateTime>(json['creationTimestamp']),
+      lastSyncTimestamp:
+          serializer.fromJson<DateTime?>(json['lastSyncTimestamp']),
     );
   }
   @override
@@ -616,164 +589,112 @@ class Contact extends DataClass implements Insertable<Contact> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'phoneNumber': serializer.toJson<String>(phoneNumber),
-      'contactsPhoneNumberType':
-          serializer.toJson<String?>(contactsPhoneNumberType),
-      'profileId': serializer.toJson<String>(profileId),
-      'contactsFirstName': serializer.toJson<String?>(contactsFirstName),
-      'contactsLastName': serializer.toJson<String?>(contactsLastName),
-      'profileFirstName': serializer.toJson<String?>(profileFirstName),
-      'profileLastName': serializer.toJson<String?>(profileLastName),
-      'creationTimestamp': serializer.toJson<int>(creationTimestamp),
-      'lastUpdatedTimestamp': serializer.toJson<DateTime>(lastUpdatedTimestamp),
+      'profileId': serializer.toJson<String?>(profileId),
+      'firstName': serializer.toJson<String?>(firstName),
+      'lastName': serializer.toJson<String?>(lastName),
+      'creationTimestamp': serializer.toJson<DateTime>(creationTimestamp),
+      'lastSyncTimestamp': serializer.toJson<DateTime?>(lastSyncTimestamp),
     };
   }
 
   Contact copyWith(
           {String? phoneNumber,
-          String? contactsPhoneNumberType,
           String? profileId,
-          String? contactsFirstName,
-          String? contactsLastName,
-          String? profileFirstName,
-          String? profileLastName,
-          int? creationTimestamp,
-          DateTime? lastUpdatedTimestamp}) =>
+          String? firstName,
+          String? lastName,
+          DateTime? creationTimestamp,
+          DateTime? lastSyncTimestamp}) =>
       Contact(
         phoneNumber: phoneNumber ?? this.phoneNumber,
-        contactsPhoneNumberType:
-            contactsPhoneNumberType ?? this.contactsPhoneNumberType,
         profileId: profileId ?? this.profileId,
-        contactsFirstName: contactsFirstName ?? this.contactsFirstName,
-        contactsLastName: contactsLastName ?? this.contactsLastName,
-        profileFirstName: profileFirstName ?? this.profileFirstName,
-        profileLastName: profileLastName ?? this.profileLastName,
+        firstName: firstName ?? this.firstName,
+        lastName: lastName ?? this.lastName,
         creationTimestamp: creationTimestamp ?? this.creationTimestamp,
-        lastUpdatedTimestamp: lastUpdatedTimestamp ?? this.lastUpdatedTimestamp,
+        lastSyncTimestamp: lastSyncTimestamp ?? this.lastSyncTimestamp,
       );
   @override
   String toString() {
     return (StringBuffer('Contact(')
           ..write('phoneNumber: $phoneNumber, ')
-          ..write('contactsPhoneNumberType: $contactsPhoneNumberType, ')
           ..write('profileId: $profileId, ')
-          ..write('contactsFirstName: $contactsFirstName, ')
-          ..write('contactsLastName: $contactsLastName, ')
-          ..write('profileFirstName: $profileFirstName, ')
-          ..write('profileLastName: $profileLastName, ')
+          ..write('firstName: $firstName, ')
+          ..write('lastName: $lastName, ')
           ..write('creationTimestamp: $creationTimestamp, ')
-          ..write('lastUpdatedTimestamp: $lastUpdatedTimestamp')
+          ..write('lastSyncTimestamp: $lastSyncTimestamp')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-      phoneNumber,
-      contactsPhoneNumberType,
-      profileId,
-      contactsFirstName,
-      contactsLastName,
-      profileFirstName,
-      profileLastName,
-      creationTimestamp,
-      lastUpdatedTimestamp);
+  int get hashCode => Object.hash(phoneNumber, profileId, firstName, lastName,
+      creationTimestamp, lastSyncTimestamp);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Contact &&
           other.phoneNumber == this.phoneNumber &&
-          other.contactsPhoneNumberType == this.contactsPhoneNumberType &&
           other.profileId == this.profileId &&
-          other.contactsFirstName == this.contactsFirstName &&
-          other.contactsLastName == this.contactsLastName &&
-          other.profileFirstName == this.profileFirstName &&
-          other.profileLastName == this.profileLastName &&
+          other.firstName == this.firstName &&
+          other.lastName == this.lastName &&
           other.creationTimestamp == this.creationTimestamp &&
-          other.lastUpdatedTimestamp == this.lastUpdatedTimestamp);
+          other.lastSyncTimestamp == this.lastSyncTimestamp);
 }
 
 class ContactsCompanion extends UpdateCompanion<Contact> {
   final Value<String> phoneNumber;
-  final Value<String?> contactsPhoneNumberType;
-  final Value<String> profileId;
-  final Value<String?> contactsFirstName;
-  final Value<String?> contactsLastName;
-  final Value<String?> profileFirstName;
-  final Value<String?> profileLastName;
-  final Value<int> creationTimestamp;
-  final Value<DateTime> lastUpdatedTimestamp;
+  final Value<String?> profileId;
+  final Value<String?> firstName;
+  final Value<String?> lastName;
+  final Value<DateTime> creationTimestamp;
+  final Value<DateTime?> lastSyncTimestamp;
   const ContactsCompanion({
     this.phoneNumber = const Value.absent(),
-    this.contactsPhoneNumberType = const Value.absent(),
     this.profileId = const Value.absent(),
-    this.contactsFirstName = const Value.absent(),
-    this.contactsLastName = const Value.absent(),
-    this.profileFirstName = const Value.absent(),
-    this.profileLastName = const Value.absent(),
+    this.firstName = const Value.absent(),
+    this.lastName = const Value.absent(),
     this.creationTimestamp = const Value.absent(),
-    this.lastUpdatedTimestamp = const Value.absent(),
+    this.lastSyncTimestamp = const Value.absent(),
   });
   ContactsCompanion.insert({
     required String phoneNumber,
-    this.contactsPhoneNumberType = const Value.absent(),
-    required String profileId,
-    this.contactsFirstName = const Value.absent(),
-    this.contactsLastName = const Value.absent(),
-    this.profileFirstName = const Value.absent(),
-    this.profileLastName = const Value.absent(),
-    required int creationTimestamp,
-    required DateTime lastUpdatedTimestamp,
-  })  : phoneNumber = Value(phoneNumber),
-        profileId = Value(profileId),
-        creationTimestamp = Value(creationTimestamp),
-        lastUpdatedTimestamp = Value(lastUpdatedTimestamp);
+    this.profileId = const Value.absent(),
+    this.firstName = const Value.absent(),
+    this.lastName = const Value.absent(),
+    this.creationTimestamp = const Value.absent(),
+    this.lastSyncTimestamp = const Value.absent(),
+  }) : phoneNumber = Value(phoneNumber);
   static Insertable<Contact> custom({
     Expression<String>? phoneNumber,
-    Expression<String?>? contactsPhoneNumberType,
-    Expression<String>? profileId,
-    Expression<String?>? contactsFirstName,
-    Expression<String?>? contactsLastName,
-    Expression<String?>? profileFirstName,
-    Expression<String?>? profileLastName,
-    Expression<int>? creationTimestamp,
-    Expression<DateTime>? lastUpdatedTimestamp,
+    Expression<String?>? profileId,
+    Expression<String?>? firstName,
+    Expression<String?>? lastName,
+    Expression<DateTime>? creationTimestamp,
+    Expression<DateTime?>? lastSyncTimestamp,
   }) {
     return RawValuesInsertable({
       if (phoneNumber != null) 'phone_number': phoneNumber,
-      if (contactsPhoneNumberType != null)
-        'contacts_phone_number_type': contactsPhoneNumberType,
       if (profileId != null) 'profile_id': profileId,
-      if (contactsFirstName != null) 'contacts_first_name': contactsFirstName,
-      if (contactsLastName != null) 'contacts_last_name': contactsLastName,
-      if (profileFirstName != null) 'profile_first_name': profileFirstName,
-      if (profileLastName != null) 'profile_last_name': profileLastName,
+      if (firstName != null) 'first_name': firstName,
+      if (lastName != null) 'last_name': lastName,
       if (creationTimestamp != null) 'creation_timestamp': creationTimestamp,
-      if (lastUpdatedTimestamp != null)
-        'last_updated_timestamp': lastUpdatedTimestamp,
+      if (lastSyncTimestamp != null) 'last_sync_timestamp': lastSyncTimestamp,
     });
   }
 
   ContactsCompanion copyWith(
       {Value<String>? phoneNumber,
-      Value<String?>? contactsPhoneNumberType,
-      Value<String>? profileId,
-      Value<String?>? contactsFirstName,
-      Value<String?>? contactsLastName,
-      Value<String?>? profileFirstName,
-      Value<String?>? profileLastName,
-      Value<int>? creationTimestamp,
-      Value<DateTime>? lastUpdatedTimestamp}) {
+      Value<String?>? profileId,
+      Value<String?>? firstName,
+      Value<String?>? lastName,
+      Value<DateTime>? creationTimestamp,
+      Value<DateTime?>? lastSyncTimestamp}) {
     return ContactsCompanion(
       phoneNumber: phoneNumber ?? this.phoneNumber,
-      contactsPhoneNumberType:
-          contactsPhoneNumberType ?? this.contactsPhoneNumberType,
       profileId: profileId ?? this.profileId,
-      contactsFirstName: contactsFirstName ?? this.contactsFirstName,
-      contactsLastName: contactsLastName ?? this.contactsLastName,
-      profileFirstName: profileFirstName ?? this.profileFirstName,
-      profileLastName: profileLastName ?? this.profileLastName,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
       creationTimestamp: creationTimestamp ?? this.creationTimestamp,
-      lastUpdatedTimestamp: lastUpdatedTimestamp ?? this.lastUpdatedTimestamp,
+      lastSyncTimestamp: lastSyncTimestamp ?? this.lastSyncTimestamp,
     );
   }
 
@@ -783,31 +704,20 @@ class ContactsCompanion extends UpdateCompanion<Contact> {
     if (phoneNumber.present) {
       map['phone_number'] = Variable<String>(phoneNumber.value);
     }
-    if (contactsPhoneNumberType.present) {
-      map['contacts_phone_number_type'] =
-          Variable<String?>(contactsPhoneNumberType.value);
-    }
     if (profileId.present) {
-      map['profile_id'] = Variable<String>(profileId.value);
+      map['profile_id'] = Variable<String?>(profileId.value);
     }
-    if (contactsFirstName.present) {
-      map['contacts_first_name'] = Variable<String?>(contactsFirstName.value);
+    if (firstName.present) {
+      map['first_name'] = Variable<String?>(firstName.value);
     }
-    if (contactsLastName.present) {
-      map['contacts_last_name'] = Variable<String?>(contactsLastName.value);
-    }
-    if (profileFirstName.present) {
-      map['profile_first_name'] = Variable<String?>(profileFirstName.value);
-    }
-    if (profileLastName.present) {
-      map['profile_last_name'] = Variable<String?>(profileLastName.value);
+    if (lastName.present) {
+      map['last_name'] = Variable<String?>(lastName.value);
     }
     if (creationTimestamp.present) {
-      map['creation_timestamp'] = Variable<int>(creationTimestamp.value);
+      map['creation_timestamp'] = Variable<DateTime>(creationTimestamp.value);
     }
-    if (lastUpdatedTimestamp.present) {
-      map['last_updated_timestamp'] =
-          Variable<DateTime>(lastUpdatedTimestamp.value);
+    if (lastSyncTimestamp.present) {
+      map['last_sync_timestamp'] = Variable<DateTime?>(lastSyncTimestamp.value);
     }
     return map;
   }
@@ -816,14 +726,11 @@ class ContactsCompanion extends UpdateCompanion<Contact> {
   String toString() {
     return (StringBuffer('ContactsCompanion(')
           ..write('phoneNumber: $phoneNumber, ')
-          ..write('contactsPhoneNumberType: $contactsPhoneNumberType, ')
           ..write('profileId: $profileId, ')
-          ..write('contactsFirstName: $contactsFirstName, ')
-          ..write('contactsLastName: $contactsLastName, ')
-          ..write('profileFirstName: $profileFirstName, ')
-          ..write('profileLastName: $profileLastName, ')
+          ..write('firstName: $firstName, ')
+          ..write('lastName: $lastName, ')
           ..write('creationTimestamp: $creationTimestamp, ')
-          ..write('lastUpdatedTimestamp: $lastUpdatedTimestamp')
+          ..write('lastSyncTimestamp: $lastSyncTimestamp')
           ..write(')'))
         .toString();
   }
@@ -838,56 +745,38 @@ class $ContactsTable extends Contacts with TableInfo<$ContactsTable, Contact> {
   late final GeneratedColumn<String?> phoneNumber = GeneratedColumn<String?>(
       'phone_number', aliasedName, false,
       typeName: 'TEXT', requiredDuringInsert: true);
-  final VerificationMeta _contactsPhoneNumberTypeMeta =
-      const VerificationMeta('contactsPhoneNumberType');
-  late final GeneratedColumn<String?> contactsPhoneNumberType =
-      GeneratedColumn<String?>('contacts_phone_number_type', aliasedName, true,
-          typeName: 'TEXT', requiredDuringInsert: false);
   final VerificationMeta _profileIdMeta = const VerificationMeta('profileId');
   late final GeneratedColumn<String?> profileId = GeneratedColumn<String?>(
-      'profile_id', aliasedName, false,
-      typeName: 'TEXT', requiredDuringInsert: true);
-  final VerificationMeta _contactsFirstNameMeta =
-      const VerificationMeta('contactsFirstName');
-  late final GeneratedColumn<String?> contactsFirstName =
-      GeneratedColumn<String?>('contacts_first_name', aliasedName, true,
-          typeName: 'TEXT', requiredDuringInsert: false);
-  final VerificationMeta _contactsLastNameMeta =
-      const VerificationMeta('contactsLastName');
-  late final GeneratedColumn<String?> contactsLastName =
-      GeneratedColumn<String?>('contacts_last_name', aliasedName, true,
-          typeName: 'TEXT', requiredDuringInsert: false);
-  final VerificationMeta _profileFirstNameMeta =
-      const VerificationMeta('profileFirstName');
-  late final GeneratedColumn<String?> profileFirstName =
-      GeneratedColumn<String?>('profile_first_name', aliasedName, true,
-          typeName: 'TEXT', requiredDuringInsert: false);
-  final VerificationMeta _profileLastNameMeta =
-      const VerificationMeta('profileLastName');
-  late final GeneratedColumn<String?> profileLastName =
-      GeneratedColumn<String?>('profile_last_name', aliasedName, true,
-          typeName: 'TEXT', requiredDuringInsert: false);
+      'profile_id', aliasedName, true,
+      typeName: 'TEXT', requiredDuringInsert: false);
+  final VerificationMeta _firstNameMeta = const VerificationMeta('firstName');
+  late final GeneratedColumn<String?> firstName = GeneratedColumn<String?>(
+      'first_name', aliasedName, true,
+      typeName: 'TEXT', requiredDuringInsert: false);
+  final VerificationMeta _lastNameMeta = const VerificationMeta('lastName');
+  late final GeneratedColumn<String?> lastName = GeneratedColumn<String?>(
+      'last_name', aliasedName, true,
+      typeName: 'TEXT', requiredDuringInsert: false);
   final VerificationMeta _creationTimestampMeta =
       const VerificationMeta('creationTimestamp');
-  late final GeneratedColumn<int?> creationTimestamp = GeneratedColumn<int?>(
-      'creation_timestamp', aliasedName, false,
-      typeName: 'INTEGER', requiredDuringInsert: true);
-  final VerificationMeta _lastUpdatedTimestampMeta =
-      const VerificationMeta('lastUpdatedTimestamp');
-  late final GeneratedColumn<DateTime?> lastUpdatedTimestamp =
-      GeneratedColumn<DateTime?>('last_updated_timestamp', aliasedName, false,
-          typeName: 'INTEGER', requiredDuringInsert: true);
+  late final GeneratedColumn<DateTime?> creationTimestamp =
+      GeneratedColumn<DateTime?>('creation_timestamp', aliasedName, false,
+          typeName: 'INTEGER',
+          requiredDuringInsert: false,
+          defaultValue: currentDateAndTime);
+  final VerificationMeta _lastSyncTimestampMeta =
+      const VerificationMeta('lastSyncTimestamp');
+  late final GeneratedColumn<DateTime?> lastSyncTimestamp =
+      GeneratedColumn<DateTime?>('last_sync_timestamp', aliasedName, true,
+          typeName: 'INTEGER', requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [
         phoneNumber,
-        contactsPhoneNumberType,
         profileId,
-        contactsFirstName,
-        contactsLastName,
-        profileFirstName,
-        profileLastName,
+        firstName,
+        lastName,
         creationTimestamp,
-        lastUpdatedTimestamp
+        lastSyncTimestamp
       ];
   @override
   String get aliasedName => _alias ?? 'contacts';
@@ -906,64 +795,35 @@ class $ContactsTable extends Contacts with TableInfo<$ContactsTable, Contact> {
     } else if (isInserting) {
       context.missing(_phoneNumberMeta);
     }
-    if (data.containsKey('contacts_phone_number_type')) {
-      context.handle(
-          _contactsPhoneNumberTypeMeta,
-          contactsPhoneNumberType.isAcceptableOrUnknown(
-              data['contacts_phone_number_type']!,
-              _contactsPhoneNumberTypeMeta));
-    }
     if (data.containsKey('profile_id')) {
       context.handle(_profileIdMeta,
           profileId.isAcceptableOrUnknown(data['profile_id']!, _profileIdMeta));
-    } else if (isInserting) {
-      context.missing(_profileIdMeta);
     }
-    if (data.containsKey('contacts_first_name')) {
-      context.handle(
-          _contactsFirstNameMeta,
-          contactsFirstName.isAcceptableOrUnknown(
-              data['contacts_first_name']!, _contactsFirstNameMeta));
+    if (data.containsKey('first_name')) {
+      context.handle(_firstNameMeta,
+          firstName.isAcceptableOrUnknown(data['first_name']!, _firstNameMeta));
     }
-    if (data.containsKey('contacts_last_name')) {
-      context.handle(
-          _contactsLastNameMeta,
-          contactsLastName.isAcceptableOrUnknown(
-              data['contacts_last_name']!, _contactsLastNameMeta));
-    }
-    if (data.containsKey('profile_first_name')) {
-      context.handle(
-          _profileFirstNameMeta,
-          profileFirstName.isAcceptableOrUnknown(
-              data['profile_first_name']!, _profileFirstNameMeta));
-    }
-    if (data.containsKey('profile_last_name')) {
-      context.handle(
-          _profileLastNameMeta,
-          profileLastName.isAcceptableOrUnknown(
-              data['profile_last_name']!, _profileLastNameMeta));
+    if (data.containsKey('last_name')) {
+      context.handle(_lastNameMeta,
+          lastName.isAcceptableOrUnknown(data['last_name']!, _lastNameMeta));
     }
     if (data.containsKey('creation_timestamp')) {
       context.handle(
           _creationTimestampMeta,
           creationTimestamp.isAcceptableOrUnknown(
               data['creation_timestamp']!, _creationTimestampMeta));
-    } else if (isInserting) {
-      context.missing(_creationTimestampMeta);
     }
-    if (data.containsKey('last_updated_timestamp')) {
+    if (data.containsKey('last_sync_timestamp')) {
       context.handle(
-          _lastUpdatedTimestampMeta,
-          lastUpdatedTimestamp.isAcceptableOrUnknown(
-              data['last_updated_timestamp']!, _lastUpdatedTimestampMeta));
-    } else if (isInserting) {
-      context.missing(_lastUpdatedTimestampMeta);
+          _lastSyncTimestampMeta,
+          lastSyncTimestamp.isAcceptableOrUnknown(
+              data['last_sync_timestamp']!, _lastSyncTimestampMeta));
     }
     return context;
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {phoneNumber, profileId};
+  Set<GeneratedColumn> get $primaryKey => {phoneNumber};
   @override
   Contact map(Map<String, dynamic> data, {String? tablePrefix}) {
     return Contact.fromData(data,
@@ -981,6 +841,7 @@ abstract class _$GonnaDatabase extends GeneratedDatabase {
   late final $AppStateTable appState = $AppStateTable(this);
   late final $ContactsTable contacts = $ContactsTable(this);
   late final AppStateDao appStateDao = AppStateDao(this as GonnaDatabase);
+  late final ContactsDao contactsDao = ContactsDao(this as GonnaDatabase);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gonna_client/pages/contacts/ContactsPage.dart';
 import 'package:gonna_client/pages/create/create.dart';
 import 'package:gonna_client/services/auth/auth.dart';
+import 'package:gonna_client/services/contact_sync/contact_sync.dart' as contact_sync;
 
 class HomePage extends StatefulWidget {
   @override
@@ -56,6 +57,10 @@ class _HomePageState extends State<HomePage> {
         ListTile(
           title: Text('Contacts'),
           onTap: _openContacts,
+        ),
+        ListTile(
+          title: Text('Sync all contacts'),
+          onTap: () => contact_sync.ContactSyncService.instance.syncAllContacts(),
         ),
         ListTile(
           title: Text('Sign Out'),

@@ -4,8 +4,6 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart'
     as permission_handler;
-import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart'
-    as permission_interface;
 import 'package:gonna_client/services/contacts/contacts.dart'
     as contacts_service;
 
