@@ -3,12 +3,10 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:gonna_client/preference_util.dart';
 import 'package:gonna_client/services/database/app_state_dao.dart'
     as app_state_dao;
 import 'package:gonna_client/services/error.dart';
 import 'package:gonna_client/services/flavor/flavor.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 const verificationTimeoutInSeconds = 60;
@@ -82,7 +80,6 @@ class User {
 
 class AuthService extends ChangeNotifier {
   final firebase_auth.FirebaseAuth _auth = firebase_auth.FirebaseAuth.instance;
-  final SharedPreferences _preferences = PreferenceUtil.instance;
 
   static AuthService? _instance;
 
