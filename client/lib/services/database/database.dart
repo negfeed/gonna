@@ -66,6 +66,12 @@ LazyDatabase _openConnection() {
   });
 }
 
+Future<void> _deleteDatabase() async {
+  final dbFolder = await getApplicationDocumentsDirectory();
+  final file = File(p.join(dbFolder.path, 'gonna.sqlite'));
+  await file.delete();
+}
+
 @DriftDatabase(tables: [AppState, Contacts], daos: [AppStateDao, ContactsDao])
 class GonnaDatabase extends _$GonnaDatabase {
 
@@ -82,4 +88,9 @@ class GonnaDatabase extends _$GonnaDatabase {
 
   @override
   int get schemaVersion => 1;
+
+  closeAndDelete() async {
+    await close();
+    await _deleteDatabase();
+  }
 }

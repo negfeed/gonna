@@ -18,9 +18,13 @@ class StorageService {
 
   Future<void> uploadProfilePicture(File profilePicture) async {
     if (_auth.currentUser == null) {
-      throw new Exception('Cant upload profile photo without authenticated user.');
+      throw new Exception(
+          'Cant upload profile photo without authenticated user.');
     }
-    await _storage.ref('profileImage/${_auth.currentUser!.uid}').putFile(profilePicture);
+    await _storage
+        .ref('profileImage/${_auth.currentUser!.uid}')
+        .putFile(profilePicture);
+    ;
     print('Finished uploading the image');
   }
 }
