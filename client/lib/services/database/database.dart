@@ -71,14 +71,13 @@ class GonnaDatabase extends _$GonnaDatabase {
 
   GonnaDatabase(QueryExecutor e): super(e);
 
-  static late GonnaDatabase _instance;
+  static GonnaDatabase? _instance;
 
   static GonnaDatabase get instance {
-    return _instance;
-  }
-
-  static Future<void> init() async {
-    _instance = GonnaDatabase(_openConnection());
+    if (_instance == null) {
+      _instance = GonnaDatabase(_openConnection());
+    }
+    return _instance!;
   }
 
   @override
