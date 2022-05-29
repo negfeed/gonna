@@ -1,3 +1,5 @@
+import 'package:gonna_client/services/auth/auth.dart' as auth;
+import 'package:gonna_client/services/background/background.dart' as background;
 import 'package:gonna_client/services/contacts/contacts.dart' as phone_contacts;
 import 'package:gonna_client/services/database/contacts_dao.dart'
     as db_contacts;
@@ -13,6 +15,19 @@ class ContactSyncService {
       _instance = ContactSyncService();
     }
     return _instance!;
+  }
+
+  static bool _scheduledSyncKicked = false;
+
+  static void scheduleSyncAllContacts() {
+    auth.AuthService.instance.currentUserChanges().listen((auth.User? user) {
+      if (!_scheduledSyncKicked &&
+          user != null &&
+          user.getSignInProvider() == auth.SignInProvider.device) {
+        _scheduledSyncKicked = true;
+        background.BackgroundService.instance.syncAllContacts();
+      }
+    });
   }
 
   Future<void> syncPhoneNumbers() async {
@@ -120,7 +135,6 @@ class ContactSyncService {
   }
 
   Future<void> syncAllContacts() async {
-
     print('Starting sync of all contacts.');
     // Steps:
     // 1. Sync the phone numbers in the contacts database. Basically remove
