@@ -104,9 +104,11 @@ class _ContactsPageState extends State<ContactsPage> {
                       style: TextStyle(fontSize: 20),
                     ),
                   ),
-                  RaisedButton(
+                  ElevatedButton(
                       onPressed: () => _openAppSettings(),
-                      padding: EdgeInsets.symmetric(horizontal: 40),
+                      style: ButtonStyle(
+                          padding: MaterialStateProperty.all(
+                              EdgeInsets.symmetric(horizontal: 40))),
                       child: const Text(
                         'Open Application Settings',
                       )),

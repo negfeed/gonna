@@ -50,12 +50,14 @@ class _PhoneEntryPageState extends State<PhoneEntryPage> {
                       autoFocus: true,
                     ),
                   ),
-                  RaisedButton(
+                  ElevatedButton(
                     onPressed: () {
                       _verifyPhoneNumber(context);
                     },
                     child: const Text('Verify'),
-                    padding: const EdgeInsets.all(20.0),
+                    style: ButtonStyle(
+                        padding: MaterialStateProperty.all(
+                            EdgeInsets.symmetric(horizontal: 40))),
                   ),
                 ],
               ),
