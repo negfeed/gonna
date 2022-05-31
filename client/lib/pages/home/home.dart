@@ -4,6 +4,7 @@ import 'package:gonna_client/pages/create/create.dart';
 import 'package:gonna_client/services/auth/auth.dart';
 import 'package:gonna_client/services/background/background.dart';
 import 'package:gonna_client/services/contact_sync/contact_sync.dart' as contact_sync;
+import 'package:gonna_client/services/wipeout/wipeout.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -74,6 +75,10 @@ class _HomePageState extends State<HomePage> {
         ListTile(
           title: Text('Delete Account'),
           onTap: () => AuthService.instance.deleteAccount(),
+        ),
+        ListTile(
+          title: Text('Signout and Wipeout'),
+          onTap: () => WipeoutService.signoutAndWipeoutDatabase(),
         ),
       ],
     ));
