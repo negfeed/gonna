@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:gonna_client/pages/auth/PhoneEntryPage.dart';
 import 'package:gonna_client/pages/auth/PhoneVerificationPage.dart';
 import 'package:gonna_client/pages/home/home.dart';

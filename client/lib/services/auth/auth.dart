@@ -52,6 +52,7 @@ class User {
     if (getSignInProvider() == SignInProvider.device) {
       return _idTokenResult.claims!['phoneNumber'];
     }
+    return null;
   }
 
   Future<String> getIdToken() async {

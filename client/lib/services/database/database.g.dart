@@ -6,7 +6,7 @@ part of 'database.dart';
 // MoorGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps, unnecessary_this
+// ignore_for_file: type=lint
 class AppStateData extends DataClass implements Insertable<AppStateData> {
   final int id;
   final DateTime verificationStartTime;
@@ -358,57 +358,67 @@ class AppStateCompanion extends UpdateCompanion<AppStateData> {
 
 class $AppStateTable extends AppState
     with TableInfo<$AppStateTable, AppStateData> {
-  final GeneratedDatabase _db;
+  @override
+  final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $AppStateTable(this._db, [this._alias]);
+  $AppStateTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
   late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
       'id', aliasedName, false,
-      typeName: 'INTEGER', requiredDuringInsert: true);
+      type: const IntType(), requiredDuringInsert: true);
   final VerificationMeta _verificationStartTimeMeta =
       const VerificationMeta('verificationStartTime');
+  @override
   late final GeneratedColumn<DateTime?> verificationStartTime =
       GeneratedColumn<DateTime?>('verification_start_time', aliasedName, false,
-          typeName: 'INTEGER', requiredDuringInsert: true);
+          type: const IntType(), requiredDuringInsert: true);
   final VerificationMeta _verificationTimeoutInSecondsMeta =
       const VerificationMeta('verificationTimeoutInSeconds');
+  @override
   late final GeneratedColumn<int?> verificationTimeoutInSeconds =
       GeneratedColumn<int?>(
           'verification_timeout_in_seconds', aliasedName, true,
-          typeName: 'INTEGER', requiredDuringInsert: false);
+          type: const IntType(), requiredDuringInsert: false);
   final VerificationMeta _verificationIdMeta =
       const VerificationMeta('verificationId');
+  @override
   late final GeneratedColumn<String?> verificationId = GeneratedColumn<String?>(
       'verification_id', aliasedName, true,
-      typeName: 'TEXT', requiredDuringInsert: false);
+      type: const StringType(), requiredDuringInsert: false);
   final VerificationMeta _resendTokenMeta =
       const VerificationMeta('resendToken');
+  @override
   late final GeneratedColumn<int?> resendToken = GeneratedColumn<int?>(
       'resend_token', aliasedName, true,
-      typeName: 'INTEGER', requiredDuringInsert: false);
+      type: const IntType(), requiredDuringInsert: false);
   final VerificationMeta _phoneNumberMeta =
       const VerificationMeta('phoneNumber');
+  @override
   late final GeneratedColumn<String?> phoneNumber = GeneratedColumn<String?>(
       'phone_number', aliasedName, true,
-      typeName: 'TEXT', requiredDuringInsert: false);
+      type: const StringType(), requiredDuringInsert: false);
   final VerificationMeta _phoneNumberMappedToProfileMeta =
       const VerificationMeta('phoneNumberMappedToProfile');
+  @override
   late final GeneratedColumn<bool?> phoneNumberMappedToProfile =
       GeneratedColumn<bool?>(
           'phone_number_mapped_to_profile', aliasedName, true,
-          typeName: 'INTEGER',
+          type: const BoolType(),
           requiredDuringInsert: false,
           defaultConstraints:
               'CHECK (phone_number_mapped_to_profile IN (0, 1))',
           defaultValue: const Constant(false));
   final VerificationMeta _firstNameMeta = const VerificationMeta('firstName');
+  @override
   late final GeneratedColumn<String?> firstName = GeneratedColumn<String?>(
       'first_name', aliasedName, true,
-      typeName: 'TEXT', requiredDuringInsert: false);
+      type: const StringType(), requiredDuringInsert: false);
   final VerificationMeta _lastNameMeta = const VerificationMeta('lastName');
+  @override
   late final GeneratedColumn<String?> lastName = GeneratedColumn<String?>(
       'last_name', aliasedName, true,
-      typeName: 'TEXT', requiredDuringInsert: false);
+      type: const StringType(), requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -496,7 +506,7 @@ class $AppStateTable extends AppState
 
   @override
   $AppStateTable createAlias(String alias) {
-    return $AppStateTable(_db, alias);
+    return $AppStateTable(attachedDatabase, alias);
   }
 }
 
@@ -737,38 +747,45 @@ class ContactsCompanion extends UpdateCompanion<Contact> {
 }
 
 class $ContactsTable extends Contacts with TableInfo<$ContactsTable, Contact> {
-  final GeneratedDatabase _db;
+  @override
+  final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $ContactsTable(this._db, [this._alias]);
+  $ContactsTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _phoneNumberMeta =
       const VerificationMeta('phoneNumber');
+  @override
   late final GeneratedColumn<String?> phoneNumber = GeneratedColumn<String?>(
       'phone_number', aliasedName, false,
-      typeName: 'TEXT', requiredDuringInsert: true);
+      type: const StringType(), requiredDuringInsert: true);
   final VerificationMeta _profileIdMeta = const VerificationMeta('profileId');
+  @override
   late final GeneratedColumn<String?> profileId = GeneratedColumn<String?>(
       'profile_id', aliasedName, true,
-      typeName: 'TEXT', requiredDuringInsert: false);
+      type: const StringType(), requiredDuringInsert: false);
   final VerificationMeta _firstNameMeta = const VerificationMeta('firstName');
+  @override
   late final GeneratedColumn<String?> firstName = GeneratedColumn<String?>(
       'first_name', aliasedName, true,
-      typeName: 'TEXT', requiredDuringInsert: false);
+      type: const StringType(), requiredDuringInsert: false);
   final VerificationMeta _lastNameMeta = const VerificationMeta('lastName');
+  @override
   late final GeneratedColumn<String?> lastName = GeneratedColumn<String?>(
       'last_name', aliasedName, true,
-      typeName: 'TEXT', requiredDuringInsert: false);
+      type: const StringType(), requiredDuringInsert: false);
   final VerificationMeta _creationTimestampMeta =
       const VerificationMeta('creationTimestamp');
+  @override
   late final GeneratedColumn<DateTime?> creationTimestamp =
       GeneratedColumn<DateTime?>('creation_timestamp', aliasedName, false,
-          typeName: 'INTEGER',
+          type: const IntType(),
           requiredDuringInsert: false,
           defaultValue: currentDateAndTime);
   final VerificationMeta _lastSyncTimestampMeta =
       const VerificationMeta('lastSyncTimestamp');
+  @override
   late final GeneratedColumn<DateTime?> lastSyncTimestamp =
       GeneratedColumn<DateTime?>('last_sync_timestamp', aliasedName, true,
-          typeName: 'INTEGER', requiredDuringInsert: false);
+          type: const IntType(), requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [
         phoneNumber,
@@ -832,7 +849,7 @@ class $ContactsTable extends Contacts with TableInfo<$ContactsTable, Contact> {
 
   @override
   $ContactsTable createAlias(String alias) {
-    return $ContactsTable(_db, alias);
+    return $ContactsTable(attachedDatabase, alias);
   }
 }
 

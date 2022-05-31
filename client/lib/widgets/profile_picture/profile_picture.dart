@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -141,21 +140,21 @@ class _ProfilePictureState extends State<ProfilePicture>
     );
   }
 
-  _cropImage(PickedFile pickedImage) async {
-    File? cropped = await ImageCropper.cropImage(
+  _cropImage(XFile pickedImage) async {
+    CroppedFile? cropped = await ImageCropper().cropImage(
       sourcePath: pickedImage.path,
       aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0),
       cropStyle: CropStyle.circle,
     );
     if (cropped != null) {
       setState(() {
-        _image = cropped;
+        _image = File(cropped.path);
       });
     }
   }
 
   _pickImage(ImageSource imageSource) async {
-    final pickedImage = await picker.getImage(
+    final pickedImage = await picker.pickImage(
         source: imageSource, preferredCameraDevice: CameraDevice.front);
 
     if (pickedImage != null) {
