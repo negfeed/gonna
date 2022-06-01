@@ -49,6 +49,7 @@ dependencies:
   path: ^1.8.0
   flutter_libphonenumber: ^1.2.1
   flutter_isolate: ^2.0.2
+  synchronized: ^3.0.0+2
 
 dev_dependencies:
   flutter_test:
