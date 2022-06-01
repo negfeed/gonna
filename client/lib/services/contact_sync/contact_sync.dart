@@ -1,11 +1,11 @@
 import 'package:gonna_client/services/auth/auth.dart' as auth;
-import 'package:gonna_client/services/background/background.dart' as background;
 import 'package:gonna_client/services/contacts/contacts.dart' as phone_contacts;
 import 'package:gonna_client/services/database/contacts_dao.dart'
     as db_contacts;
 import 'package:gonna_client/services/database/database.dart';
 import 'package:gonna_client/services/firestore/phone_firestore.dart'
     as phone_firestore;
+import 'package:synchronized/synchronized.dart' as synchronized;
 
 class ContactSyncService {
   static ContactSyncService? _instance;
@@ -25,10 +25,12 @@ class ContactSyncService {
           user != null &&
           user.getSignInProvider() == auth.SignInProvider.device) {
         _scheduledSyncKicked = true;
-        background.BackgroundService.instance.syncAllContacts();
+        ContactSyncService.instance.syncAllContacts();
       }
     });
   }
+
+  final lock = synchronized.Lock();
 
   Future<void> syncPhoneNumbers() async {
     // Steps:
@@ -135,20 +137,24 @@ class ContactSyncService {
   }
 
   Future<void> syncAllContacts() async {
-    print('Starting sync of all contacts.');
-    // Steps:
-    // 1. Sync the phone numbers in the contacts database. Basically remove
-    //    database contacts that are no longer in the phone and create
-    //    database contacts for phone numbers that don't already exist in
-    //    the database.
-    await syncPhoneNumbers();
 
-    // 2. Sync profile IDs in the contacts database from the phone directory.
-    //    If the phone is found, make sure to update the profile ID in the
-    //    local database. If the phone is not found, make sure to unlink any
-    //    profile ID associated with the contact in the local database.
-    await syncProfileIds();
+    // Allow only one sync at a time.
+    await lock.synchronized(() async {
+      print('Starting sync of all contacts.');
+      // Steps:
+      // 1. Sync the phone numbers in the contacts database. Basically remove
+      //    database contacts that are no longer in the phone and create
+      //    database contacts for phone numbers that don't already exist in
+      //    the database.
+      await syncPhoneNumbers();
 
-    print('Finished sync of all contacts.');
+      // 2. Sync profile IDs in the contacts database from the phone directory.
+      //    If the phone is found, make sure to update the profile ID in the
+      //    local database. If the phone is not found, make sure to unlink any
+      //    profile ID associated with the contact in the local database.
+      await syncProfileIds();
+
+      print('Finished sync of all contacts.');
+    });
   }
 }

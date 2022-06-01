@@ -6,14 +6,12 @@ import 'package:gonna_client/routing/RouterDelegate.dart';
 import 'package:gonna_client/services/contact_sync/contact_sync.dart' as contact_sync;
 import 'package:gonna_client/services/flavor/flavor.dart';
 import 'package:gonna_client/theme_data.dart';
-import 'package:gonna_client/services/background/background.dart' as background;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await PreferenceUtil.init();
   await FlavorConfig.init();
   await Firebase.initializeApp();
-  await background.BackgroundService.init();
   contact_sync.ContactSyncService.scheduleSyncAllContacts();
   runApp(MyApp());
 }
