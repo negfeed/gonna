@@ -49,7 +49,7 @@ class ContactSyncService {
 
     // 2. Read database contacts.
     var contactsFromDatabase =
-        await db_contacts.ContactsDao.instance.readAllContacts();
+        await db_contacts.ContactsDao.instance.readAllContacts().get();
 
     Set<String> phoneNumbersInPhone =
         Set.from(e164PhoneNumbersToContactMap.keys);
@@ -101,7 +101,7 @@ class ContactSyncService {
 
     // 1. Retrieve all contacts.
     final contactsFromDatabase =
-        await db_contacts.ContactsDao.instance.readAllContacts();
+        await db_contacts.ContactsDao.instance.readAllContacts().get();
 
     // 2. Update the read results into the database setting the sync timestamp.
     final contactStream = Stream.fromIterable(contactsFromDatabase);

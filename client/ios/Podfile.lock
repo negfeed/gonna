@@ -666,6 +666,9 @@ PODS:
   - flutter_libphonenumber (0.0.1):
     - Flutter
     - PhoneNumberKit/PhoneNumberKitCore (~> 3.3.3)
+  - FMDB (2.7.5):
+    - FMDB/standard (= 2.7.5)
+  - FMDB/standard (2.7.5)
   - GoogleDataTransport (9.1.4):
     - GoogleUtilities/Environment (~> 7.7)
     - nanopb (< 2.30910.0, >= 2.30908.0)
@@ -772,6 +775,9 @@ PODS:
     - Flutter
   - sms_autofill (0.0.1):
     - Flutter
+  - sqflite (0.0.2):
+    - Flutter
+    - FMDB (>= 2.7.5)
   - sqlite3 (3.38.5):
     - sqlite3/common (= 3.38.5)
   - sqlite3/common (3.38.5)
@@ -809,6 +815,7 @@ DEPENDENCIES:
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - shared_preferences_ios (from `.symlinks/plugins/shared_preferences_ios/ios`)
   - sms_autofill (from `.symlinks/plugins/sms_autofill/ios`)
+  - sqflite (from `.symlinks/plugins/sqflite/ios`)
   - sqlite3_flutter_libs (from `.symlinks/plugins/sqlite3_flutter_libs/ios`)
 
 SPEC REPOS:
@@ -821,6 +828,7 @@ SPEC REPOS:
     - FirebaseCoreDiagnostics
     - FirebaseFirestore
     - FirebaseStorage
+    - FMDB
     - GoogleDataTransport
     - GoogleUtilities
     - "gRPC-C++"
@@ -868,6 +876,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/shared_preferences_ios/ios"
   sms_autofill:
     :path: ".symlinks/plugins/sms_autofill/ios"
+  sqflite:
+    :path: ".symlinks/plugins/sqflite/ios"
   sqlite3_flutter_libs:
     :path: ".symlinks/plugins/sqlite3_flutter_libs/ios"
 
@@ -888,6 +898,7 @@ SPEC CHECKSUMS:
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
   flutter_isolate: 0edf5081826d071adf21759d1eb10ff5c24503b5
   flutter_libphonenumber: 6a23afdf063b34d1e53e6dbd6c6bc905d18e8e46
+  FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   GoogleDataTransport: 5fffe35792f8b96ec8d6775f5eccd83c998d5a3b
   GoogleUtilities: e0913149f6b0625b553d70dae12b49fc62914fd1
   "gRPC-C++": 9675f953ace2b3de7c506039d77be1f2e77a8db2
@@ -907,10 +918,11 @@ SPEC CHECKSUMS:
   PromisesObjC: 99b6f43f9e1044bd87a95a60beff28c2c44ddb72
   shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
   sms_autofill: c461043483362c3f1709ee76eaae6eb570b31686
+  sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
   sqlite3: 93442daab2ab1825bc9c05faa85814a1996f5b65
   sqlite3_flutter_libs: 92ed62fa0dcbfe2e37d5e2b60d00820672b71ffb
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
 
 PODFILE CHECKSUM: a35638a29f4ec8977da5960238e30edb29a75afa
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.11.3

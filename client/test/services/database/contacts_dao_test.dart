@@ -22,7 +22,7 @@ void main() {
       contacts_dao.ContactSeed('+555444555', lastName: 'Adams'),
     ]);
 
-    await contactsDao!.readAllContacts().then((contacts) {
+    await contactsDao!.readAllContacts().get().then((contacts) {
       expect(contacts.length, 3);
       var contact = contacts.firstWhere((c) => c.phoneNumber == '+123456789');
       expect(contact.firstName, 'John');
@@ -45,6 +45,25 @@ void main() {
     });
   });
 
+  test('Create contacts and read them sorted by name.', () async {
+    await contactsDao!.createContacts([
+      contacts_dao.ContactSeed('+123456789',
+          firstName: 'John', lastName: 'Doe'),
+      contacts_dao.ContactSeed('+987654321', firstName: 'Barack'),
+      contacts_dao.ContactSeed('+555444555', lastName: 'Adams'),
+    ]);
+
+    await contactsDao!.readAllContacts(orderByName: true).get().then((contacts) {
+      expect(contacts.length, 3);
+      var contact = contacts[0];
+      expect(contact.lastName, 'Adams');
+      contact = contacts[1];
+      expect(contact.firstName, 'Barack');
+      contact = contacts[2];
+      expect(contact.firstName, 'John');
+    });
+  });
+
   test('Create contacts then delete some.', () async {
     await contactsDao!.createContacts([
       contacts_dao.ContactSeed('+123456789',
@@ -55,7 +74,7 @@ void main() {
 
     await contactsDao!.deleteContacts(['+123456789', '+987654321'].toSet());
 
-    await contactsDao!.readAllContacts().then((contacts) {
+    await contactsDao!.readAllContacts().get().then((contacts) {
       expect(contacts.length, 1);
       final contact = contacts.first;
       expect(contact.phoneNumber, '+555444555');
@@ -75,7 +94,7 @@ void main() {
     await contactsDao!
         .updateProfileId(contacts_dao.UpdateProfileId('+987654321'));
 
-    await contactsDao!.readAllContacts().then((contacts) {
+    await contactsDao!.readAllContacts().get().then((contacts) {
       expect(contacts.length, 2);
       var contact = contacts.firstWhere((c) => c.phoneNumber == '+123456789');
       expect(contact.firstName, 'John');
@@ -101,7 +120,7 @@ void main() {
     await contactsDao!.updateProfileId(
         contacts_dao.UpdateProfileId('+123456789', profileId: '123456789'));
 
-    await contactsDao!.readAllContacts().then((contacts) {
+    await contactsDao!.readAllContacts().get().then((contacts) {
       expect(contacts.length, 1);
       var contact = contacts.first;
       expect(contact.firstName, 'John');
@@ -114,7 +133,7 @@ void main() {
     await contactsDao!.updateProfileId(
         contacts_dao.UpdateProfileId('+123456789', profileId: null));
 
-    await contactsDao!.readAllContacts().then((contacts) {
+    await contactsDao!.readAllContacts().get().then((contacts) {
       expect(contacts.length, 1);
       var contact = contacts.first;
       expect(contact.firstName, 'John');
@@ -138,7 +157,7 @@ void main() {
       contacts_dao.UpdateProfileId('+987654321')
     ]);
 
-    await contactsDao!.readAllContacts().then((contacts) {
+    await contactsDao!.readAllContacts().get().then((contacts) {
       expect(contacts.length, 2);
       var contact = contacts.firstWhere((c) => c.phoneNumber == '+123456789');
       expect(contact.firstName, 'John');
