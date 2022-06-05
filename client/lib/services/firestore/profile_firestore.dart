@@ -41,6 +41,17 @@ class ProfileFirestoreService extends foundation.ChangeNotifier {
     return _auth.currentUser!.uid;
   }
 
+  Future<Profile?> lookupProfile(String profileId) {
+    return _firestore.collection('profiles').doc(profileId).get().then((snapshot) {
+      if (snapshot.exists) {
+        notifyListeners();
+        return Profile.fromJson(snapshot.data() as Map<String, dynamic>);
+      } else {
+        return null;
+      }
+    });
+  }
+
   bool isProfileInitialized() {
     return _preferences.getString(profileFirstNamePrefKey) != null &&
         _preferences.getString(profileLastNamePrefKey) != null;

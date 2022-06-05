@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gonna_client/pages/contacts/ContactsPage.dart';
+import 'package:gonna_client/pages/contacts/UsersPage.dart';
 import 'package:gonna_client/pages/create/create.dart';
 import 'package:gonna_client/services/auth/auth.dart';
 import 'package:gonna_client/services/contact_sync/contact_sync.dart' as contact_sync;
@@ -20,6 +21,11 @@ class _HomePageState extends State<HomePage> {
   void _openContacts() {
     Navigator.of(context).pop();
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ContactsPage()));
+  }
+
+  void _openUsers() {
+    Navigator.of(context).pop();
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => UsersPage()));
   }
 
   @override
@@ -56,20 +62,16 @@ class _HomePageState extends State<HomePage> {
           accountEmail: Text('TODO: Email'),
         ),
         ListTile(
-          title: Text('Contacts'),
+          title: Text('Contacts (phone)'),
           onTap: _openContacts,
         ),
         ListTile(
-          title: Text('Sync all contacts (direct)'),
+          title: Text('Contacts (phone + profiles)'),
+          onTap: _openUsers,
+        ),
+        ListTile(
+          title: Text('Sync all contacts'),
           onTap: () => contact_sync.ContactSyncService.instance.syncAllContacts(),
-        ),
-        ListTile(
-          title: Text('Sign Out'),
-          onTap: () => AuthService.instance.signOut(),
-        ),
-        ListTile(
-          title: Text('Delete Account'),
-          onTap: () => AuthService.instance.deleteAccount(),
         ),
         ListTile(
           title: Text('Signout and Wipeout'),
