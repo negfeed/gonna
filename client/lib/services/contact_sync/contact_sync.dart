@@ -5,6 +5,8 @@ import 'package:gonna_client/services/database/contacts_dao.dart'
 import 'package:gonna_client/services/database/database.dart';
 import 'package:gonna_client/services/firestore/phone_firestore.dart'
     as phone_firestore;
+import 'package:gonna_client/services/firestore/profile_firestore.dart'
+    as profile_firestore;
 import 'package:synchronized/synchronized.dart' as synchronized;
 
 class ContactSyncService {
@@ -32,7 +34,7 @@ class ContactSyncService {
 
   final lock = synchronized.Lock();
 
-  Future<void> syncPhoneNumbers() async {
+  Future<void> _syncPhoneNumbers() async {
     // Steps:
     // 1. Read and create a set of all phone numbers found in phone contacts.
     // 2. Read phones and last sync time from the local database.
@@ -74,7 +76,7 @@ class ContactSyncService {
   }
 
   // TODO(mshamma): Implement the more efficient solution of syncing the top N priority profiles.
-  Future<void> syncProfileIds() async {
+  Future<void> _syncProfileIds() async {
     // Steps:
     // 1. Retrieve all contacts.
     // 2. Calculate the priority list of phone numbers from the phone book.
@@ -105,24 +107,37 @@ class ContactSyncService {
 
     // 2. Update the read results into the database setting the sync timestamp.
     final contactStream = Stream.fromIterable(contactsFromDatabase);
-    await for (final contactsBatch in batchContacts(contactStream)) {
+    await for (final contactsBatch in _batchContacts(contactStream)) {
       final List<String> phones =
           contactsBatch.map((c) => c.phoneNumber).toList();
-      final phoneToProfileIdMap = await phone_firestore
-          .PhoneFirestoreService.instance
-          .resolvePhoneNumbersToProfileIds(phones);
+      final phoneMap = await phone_firestore.PhoneFirestoreService.instance
+          .getPhoneDocsOfPhoneNumbers(phones);
+      final List<String> profileIds = phoneMap.values
+          .where((e) => e.profileId != null)
+          .map((e) => e.profileId!)
+          .toSet()
+          .toList();
+      final profileMap = profileIds.isEmpty ? {} : await profile_firestore
+            .ProfileFirestoreService.instance
+            .getProfileDocsOfProfileIds(profileIds);
 
-      List<db_contacts.UpdateProfileId> contactsToUpdate = [];
+      List<db_contacts.UpdateProfileInformation> contactsToUpdate = [];
       contactsBatch.forEach((contact) {
-        contactsToUpdate.add(db_contacts.UpdateProfileId(contact.phoneNumber,
-            profileId: phoneToProfileIdMap[contact.phoneNumber]));
+        final phoneDoc = phoneMap[contact.phoneNumber] ?? null;
+        final profileDoc = profileMap[phoneDoc?.profileId] ?? null;
+        contactsToUpdate.add(db_contacts.UpdateProfileInformation(
+            contact.phoneNumber,
+            profileId: phoneDoc?.profileId,
+            profileFirstName: profileDoc?.firstName,
+            profileLastName: profileDoc?.lastName));
       });
 
-      await db_contacts.ContactsDao.instance.updateProfileIds(contactsToUpdate);
+      await db_contacts.ContactsDao.instance
+          .updateProfilesInformation(contactsToUpdate);
     }
   }
 
-  Stream<List<Contact>> batchContacts(Stream<Contact> contacts) async* {
+  Stream<List<Contact>> _batchContacts(Stream<Contact> contacts) async* {
     List<Contact> batch = [];
     await for (final contact in contacts) {
       batch.add(contact);
@@ -137,7 +152,6 @@ class ContactSyncService {
   }
 
   Future<void> syncAllContacts() async {
-
     // Allow only one sync at a time.
     await lock.synchronized(() async {
       print('Starting sync of all contacts.');
@@ -146,13 +160,13 @@ class ContactSyncService {
       //    database contacts that are no longer in the phone and create
       //    database contacts for phone numbers that don't already exist in
       //    the database.
-      await syncPhoneNumbers();
+      await _syncPhoneNumbers();
 
       // 2. Sync profile IDs in the contacts database from the phone directory.
       //    If the phone is found, make sure to update the profile ID in the
       //    local database. If the phone is not found, make sure to unlink any
       //    profile ID associated with the contact in the local database.
-      await syncProfileIds();
+      await _syncProfileIds();
 
       print('Finished sync of all contacts.');
     });

@@ -45,10 +45,16 @@ class Contacts extends Table {
   // Contact's last name as it appears in the phone contacts.
   TextColumn get lastName => text().nullable()();
 
+  // The first name that appears on the profile associated with the contact.
+  TextColumn get profileFirstName => text().nullable()();
+
+  // The last name that appears on the profile associated with the contact.
+  TextColumn get profileLastName => text().nullable()();
+
   // The time when this record was first created.
   DateTimeColumn get creationTimestamp => dateTime().withDefault(currentDateAndTime)();
 
-  // The time when this record was last updated.
+  // The time when the contact information was last updated from the server.
   DateTimeColumn get lastSyncTimestamp => dateTime().nullable()();
 
   @override

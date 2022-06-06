@@ -81,8 +81,38 @@ class UsersList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<user_service.User> usingTheApplist = [];
+    for (var user in users.where((user) => user.profileId != null)) {
+      usingTheApplist.add(user);
+    }
+    List<user_service.User> notUsingTheApplist = [];
+    for (var user in users.where((user) => user.profileId == null)) {
+      notUsingTheApplist.add(user);
+    }
+
     List<Widget> list = [];
-    for (var user in users) {
+    if (usingTheApplist.isNotEmpty) {
+      list.add(Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Text('USING THE APP (${usingTheApplist.length} CONTACTS)',
+              style: TextStyle(color: Colors.grey))));
+      list.add(Divider(thickness: 1));
+    }
+    for (var user in usingTheApplist) {
+      list.add(UserListItem(user));
+      list.add(Divider(
+        thickness: 1,
+      ));
+    }
+    if (notUsingTheApplist.isNotEmpty) {
+      list.add(Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Text(
+              'NOT USING THE APP (${notUsingTheApplist.length} CONTACTS)',
+              style: TextStyle(color: Colors.grey))));
+      list.add(Divider(thickness: 1));
+    }
+    for (var user in notUsingTheApplist) {
       list.add(UserListItem(user));
       list.add(Divider(
         thickness: 1,
@@ -100,7 +130,6 @@ class UsersPage extends StatefulWidget {
 }
 
 class _UsersPageState extends State<UsersPage> {
-
   String query = "";
 
   @override
@@ -110,7 +139,8 @@ class _UsersPageState extends State<UsersPage> {
           title: Text('Contacts'),
         ),
         body: StreamBuilder<Iterable<user_service.User>>(
-          stream: user_service.UserService.instance.queryPhoneContactsUsersByName(query),
+          stream: user_service.UserService.instance
+              .queryPhoneContactsUsersByName(query),
           builder: (BuildContext context,
               AsyncSnapshot<Iterable<user_service.User>> snapshot) {
             List<Widget> noDataWidgets = [];

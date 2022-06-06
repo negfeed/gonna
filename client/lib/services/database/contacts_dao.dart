@@ -10,10 +10,15 @@ class ContactSeed {
   ContactSeed(this.phoneNumber, {this.firstName, this.lastName});
 }
 
-class UpdateProfileId {
+class UpdateProfileInformation {
   String phoneNumber;
   String? profileId;
-  UpdateProfileId(this.phoneNumber, {this.profileId=null});
+  String? profileFirstName;
+  String? profileLastName;
+  UpdateProfileInformation(this.phoneNumber,
+      {this.profileId = null,
+      this.profileFirstName = null,
+      this.profileLastName = null});
 }
 
 @DriftAccessor(tables: [Contacts])
@@ -35,16 +40,15 @@ class ContactsDao extends DatabaseAccessor<GonnaDatabase>
   MultiSelectable<Contact> readAllContacts({orderByName: false}) {
     var query = select(contacts);
     if (orderByName) {
-      query = query..orderBy([
-        (c) => OrderingTerm(
-          expression: c.firstName,
-          mode: OrderingMode.asc,
-        ),
-        (c) => OrderingTerm(
-          expression: c.lastName,
-          mode: OrderingMode.asc,
-        ),
-      ]);
+      query = query
+        ..orderBy([
+          (c) => OrderingTerm(
+              expression: c.profileFirstName, mode: OrderingMode.asc),
+          (c) => OrderingTerm(
+              expression: c.profileLastName, mode: OrderingMode.asc),
+          (c) => OrderingTerm(expression: c.firstName, mode: OrderingMode.asc),
+          (c) => OrderingTerm(expression: c.lastName, mode: OrderingMode.asc),
+        ]);
     }
     return query;
   }
@@ -68,16 +72,22 @@ class ContactsDao extends DatabaseAccessor<GonnaDatabase>
     });
   }
 
-  Future<void> updateProfileId(UpdateProfileId updateProfileId) async {
+  Future<void> updateProfileInformation(
+      UpdateProfileInformation updateProfileId) async {
     await (update(contacts)
           ..where((c) => c.phoneNumber.equals(updateProfileId.phoneNumber)))
         .write(ContactsCompanion(
             profileId: Value(updateProfileId.profileId),
+            profileFirstName:
+                Value<String>.ofNullable(updateProfileId.profileFirstName),
+            profileLastName:
+                Value<String>.ofNullable(updateProfileId.profileLastName),
             lastSyncTimestamp: Value(DateTime.now())));
   }
 
-  Future<void> updateProfileIds(
-      Iterable<UpdateProfileId> updateProfileIds) async {
-    await Future.wait(updateProfileIds.map((e) => updateProfileId(e)));
+  Future<void> updateProfilesInformation(
+      Iterable<UpdateProfileInformation> updateProfilesInformation) async {
+    await Future.wait(
+        updateProfilesInformation.map((e) => updateProfileInformation(e)));
   }
 }

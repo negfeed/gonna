@@ -57,17 +57,15 @@ class PhoneFirestoreService extends foundation.ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Map<String, String>> resolvePhoneNumbersToProfileIds(
-      List<String> phoneNumbers) async {
+  Future<Map<String, Phone>> getPhoneDocsOfPhoneNumbers(List<String> phoneNumbers) async {
     return _firestore
         .collection('phones')
         .where('__name__', whereIn: phoneNumbers)
         .get()
         .then((querySnapshot) => Map.fromIterable(
-            querySnapshot.docs
-                .where((d) => Phone.fromJson(d.data()).profileId != null),
+            querySnapshot.docs,
             key: (d) => d.id,
-            value: (d) => Phone.fromJson(d.data()).profileId!));
+            value: (d) => Phone.fromJson(d.data())));
   }
 
   bool isPhoneDirectoryUpdated() {
