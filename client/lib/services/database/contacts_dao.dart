@@ -49,23 +49,6 @@ class ContactsDao extends DatabaseAccessor<GonnaDatabase>
     return query;
   }
 
-  MultiSelectable<Contact> queryContactsByName({String queryString = ''}) {
-    var query = select(contacts)..orderBy([
-      (c) => OrderingTerm(
-        expression: c.firstName,
-        mode: OrderingMode.asc,
-      ),
-      (c) => OrderingTerm(
-        expression: c.lastName,
-        mode: OrderingMode.asc,
-      ),
-    ]);
-    if (queryString.isNotEmpty) {
-      query = query..where((c) => c.firstName.like('%$queryString%') | c.lastName.like('%$queryString%'));
-    }
-    return query;
-  }
-
   Future<void> deleteContacts(Set<String> phoneNumbers) {
     return (delete(contacts)..where((c) => c.phoneNumber.isIn(phoneNumbers)))
         .go();
