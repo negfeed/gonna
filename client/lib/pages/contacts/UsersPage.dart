@@ -68,6 +68,7 @@ class UserListItem extends StatelessWidget {
     return ListTile(
       leading: _avatar(user),
       title: Text((user.firstName ?? "") + " " + (user.lastName ?? "")),
+      subtitle: Text(user.phoneNumber),
       trailing: _maybeInviteButton(user),
     );
   }
