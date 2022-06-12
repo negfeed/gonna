@@ -14,6 +14,10 @@ void main() {
     contactsDao = contacts_dao.ContactsDao(database!);
   });
 
+  tearDown(() async {
+    await database!.close();
+  });
+
   test('Create contacts and read them.', () async {
     await contactsDao!.createContacts([
       contacts_dao.ContactSeed('+123456789',
@@ -45,25 +49,6 @@ void main() {
     });
   });
 
-  test('Create contacts and read them sorted by name.', () async {
-    await contactsDao!.createContacts([
-      contacts_dao.ContactSeed('+123456789',
-          firstName: 'John', lastName: 'Doe'),
-      contacts_dao.ContactSeed('+987654321', firstName: 'Barack'),
-      contacts_dao.ContactSeed('+555444555', lastName: 'Adams'),
-    ]);
-
-    await contactsDao!.readAllContacts(orderByName: true).get().then((contacts) {
-      expect(contacts.length, 3);
-      var contact = contacts[0];
-      expect(contact.lastName, 'Adams');
-      contact = contacts[1];
-      expect(contact.firstName, 'Barack');
-      contact = contacts[2];
-      expect(contact.firstName, 'John');
-    });
-  });
-
   test('Create contacts then delete some.', () async {
     await contactsDao!.createContacts([
       contacts_dao.ContactSeed('+123456789',
@@ -89,10 +74,10 @@ void main() {
           firstName: 'Barack', lastName: 'Obama'),
     ]);
 
-    await contactsDao!.updateProfileInformation(
-        contacts_dao.UpdateProfileInformation('+123456789', profileId: '123456789'));
+    await contactsDao!.updateProfileId(
+        contacts_dao.UpdateProfileId('+123456789', profileId: '123456789'));
     await contactsDao!
-        .updateProfileInformation(contacts_dao.UpdateProfileInformation('+987654321'));
+        .updateProfileId(contacts_dao.UpdateProfileId('+987654321'));
 
     await contactsDao!.readAllContacts().get().then((contacts) {
       expect(contacts.length, 2);
@@ -117,8 +102,8 @@ void main() {
           firstName: 'John', lastName: 'Doe'),
     ]);
 
-    await contactsDao!.updateProfileInformation(
-        contacts_dao.UpdateProfileInformation('+123456789', profileId: '123456789'));
+    await contactsDao!.updateProfileId(
+        contacts_dao.UpdateProfileId('+123456789', profileId: '123456789'));
 
     await contactsDao!.readAllContacts().get().then((contacts) {
       expect(contacts.length, 1);
@@ -130,8 +115,8 @@ void main() {
       expect(contact.lastSyncTimestamp, isNotNull);
     });
 
-    await contactsDao!.updateProfileInformation(
-        contacts_dao.UpdateProfileInformation('+123456789', profileId: null));
+    await contactsDao!.updateProfileId(
+        contacts_dao.UpdateProfileId('+123456789', profileId: null));
 
     await contactsDao!.readAllContacts().get().then((contacts) {
       expect(contacts.length, 1);
@@ -152,9 +137,9 @@ void main() {
           firstName: 'Barack', lastName: 'Obama'),
     ]);
 
-    await contactsDao!.updateProfilesInformation([
-      contacts_dao.UpdateProfileInformation('+123456789', profileId: '123456789', profileFirstName: "Johnny", profileLastName: "Doeherty"),
-      contacts_dao.UpdateProfileInformation('+987654321')
+    await contactsDao!.updateProfileIds([
+      contacts_dao.UpdateProfileId('+123456789', profileId: '123456789'),
+      contacts_dao.UpdateProfileId('+987654321')
     ]);
 
     await contactsDao!.readAllContacts().get().then((contacts) {
@@ -163,8 +148,6 @@ void main() {
       expect(contact.firstName, 'John');
       expect(contact.lastName, 'Doe');
       expect(contact.profileId, '123456789');
-      expect(contact.profileFirstName, 'Johnny');
-      expect(contact.profileLastName, 'Doeherty');
       expect(contact.creationTimestamp, isNotNull);
       expect(contact.lastSyncTimestamp, isNotNull);
       contact = contacts.firstWhere((c) => c.phoneNumber == '+987654321');
@@ -174,9 +157,5 @@ void main() {
       expect(contact.creationTimestamp, isNotNull);
       expect(contact.lastSyncTimestamp, isNotNull);
     });
-  });
-
-  tearDown(() async {
-    await database!.close();
   });
 }

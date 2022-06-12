@@ -1,8 +1,10 @@
 import 'package:gonna_client/services/auth/auth.dart' as auth;
 import 'package:gonna_client/services/contacts/contacts.dart' as phone_contacts;
 import 'package:gonna_client/services/database/contacts_dao.dart'
-    as db_contacts;
+    as contacts_dao;
 import 'package:gonna_client/services/database/database.dart';
+import 'package:gonna_client/services/database/profiles_dao.dart'
+    as profiles_dao;
 import 'package:gonna_client/services/firestore/phone_firestore.dart'
     as phone_firestore;
 import 'package:gonna_client/services/firestore/profile_firestore.dart'
@@ -51,7 +53,7 @@ class ContactSyncService {
 
     // 2. Read database contacts.
     var contactsFromDatabase =
-        await db_contacts.ContactsDao.instance.readAllContacts().get();
+        await contacts_dao.ContactsDao.instance.readAllContacts().get();
 
     Set<String> phoneNumbersInPhone =
         Set.from(e164PhoneNumbersToContactMap.keys);
@@ -61,16 +63,17 @@ class ContactSyncService {
     // 3. Delete the set of phones not in the phone book but are in the database.
     final phoneNumbersToDelete =
         phoneNumbersInDatabase.difference(phoneNumbersInPhone);
-    await db_contacts.ContactsDao.instance.deleteContacts(phoneNumbersToDelete);
+    await contacts_dao.ContactsDao.instance
+        .deleteContacts(phoneNumbersToDelete);
 
     // 4. Insert records for phone numbers in the phone book but not in
     //    the database.
     final phoneNumbersToAdd =
         phoneNumbersInPhone.difference(phoneNumbersInDatabase);
-    await db_contacts.ContactsDao.instance
+    await contacts_dao.ContactsDao.instance
         .createContacts(phoneNumbersToAdd.map((phoneNumber) {
       final contact = e164PhoneNumbersToContactMap[phoneNumber]!;
-      return db_contacts.ContactSeed(phoneNumber,
+      return contacts_dao.ContactSeed(phoneNumber,
           firstName: contact.givenName, lastName: contact.familyName);
     }));
   }
@@ -103,7 +106,7 @@ class ContactSyncService {
 
     // 1. Retrieve all contacts.
     final contactsFromDatabase =
-        await db_contacts.ContactsDao.instance.readAllContacts().get();
+        await contacts_dao.ContactsDao.instance.readAllContacts().get();
 
     // 2. Update the read results into the database setting the sync timestamp.
     final contactStream = Stream.fromIterable(contactsFromDatabase);
@@ -117,23 +120,25 @@ class ContactSyncService {
           .map((e) => e.profileId!)
           .toSet()
           .toList();
-      final profileMap = profileIds.isEmpty ? {} : await profile_firestore
-            .ProfileFirestoreService.instance
-            .getProfileDocsOfProfileIds(profileIds);
+      final profileMap = await profile_firestore.ProfileFirestoreService.instance
+              .getProfileDocsOfProfileIds(profileIds);
 
-      List<db_contacts.UpdateProfileInformation> contactsToUpdate = [];
+      List<contacts_dao.UpdateProfileId> contactsToUpdate = [];
+      List<profiles_dao.UpsertProfile> profilesToUpsert = [];
       contactsBatch.forEach((contact) {
         final phoneDoc = phoneMap[contact.phoneNumber] ?? null;
         final profileDoc = profileMap[phoneDoc?.profileId] ?? null;
-        contactsToUpdate.add(db_contacts.UpdateProfileInformation(
-            contact.phoneNumber,
-            profileId: phoneDoc?.profileId,
-            profileFirstName: profileDoc?.firstName,
-            profileLastName: profileDoc?.lastName));
+        contactsToUpdate.add(contacts_dao.UpdateProfileId(contact.phoneNumber,
+            profileId: phoneDoc?.profileId));
+        if (profileDoc != null) {
+          profilesToUpsert.add(profiles_dao.UpsertProfile(phoneDoc!.profileId!,
+              firstName: profileDoc.firstName, lastName: profileDoc.lastName));
+        }
       });
 
-      await db_contacts.ContactsDao.instance
-          .updateProfilesInformation(contactsToUpdate);
+      await contacts_dao.ContactsDao.instance
+          .updateProfileIds(contactsToUpdate);
+      await profiles_dao.ProfilesDao.instance.upsertProfiles(profilesToUpsert);
     }
   }
 

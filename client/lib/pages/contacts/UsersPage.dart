@@ -169,7 +169,7 @@ class _UsersPageState extends State<UsersPage> {
             } else if (snapshot.hasError) {
               noDataWidgets.add(Padding(
                 padding: EdgeInsets.only(top: 16),
-                child: Text('Error: ${snapshot.error}.'),
+                child: Text('Error: ${snapshot.error}.}'),
               ));
             } else {
               noDataWidgets.addAll([

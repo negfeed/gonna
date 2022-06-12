@@ -53,6 +53,9 @@ class ProfileFirestoreService extends foundation.ChangeNotifier {
   }
 
   Future<Map<String, Profile>> getProfileDocsOfProfileIds(List<String> profileIds) async {
+    if (profileIds.isEmpty) {
+      return {};
+    }
     return _firestore
         .collection('profiles')
         .where('__name__', whereIn: profileIds)

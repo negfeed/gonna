@@ -3,6 +3,7 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:gonna_client/services/database/app_state_dao.dart';
 import 'package:gonna_client/services/database/contacts_dao.dart';
+import 'package:gonna_client/services/database/profiles_dao.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
@@ -45,20 +46,36 @@ class Contacts extends Table {
   // Contact's last name as it appears in the phone contacts.
   TextColumn get lastName => text().nullable()();
 
-  // The first name that appears on the profile associated with the contact.
-  TextColumn get profileFirstName => text().nullable()();
-
-  // The last name that appears on the profile associated with the contact.
-  TextColumn get profileLastName => text().nullable()();
-
   // The time when this record was first created.
-  DateTimeColumn get creationTimestamp => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get creationTimestamp =>
+      dateTime().withDefault(currentDateAndTime)();
 
   // The time when the contact information was last updated from the server.
   DateTimeColumn get lastSyncTimestamp => dateTime().nullable()();
 
   @override
   Set<Column> get primaryKey => {phoneNumber};
+}
+
+class Profiles extends Table {
+  // The profile ID.
+  TextColumn get profileId => text()();
+
+  // The first name that appears on the profile.
+  TextColumn get firstName => text().nullable()();
+
+  // The last name that appears on the profile.
+  TextColumn get lastName => text().nullable()();
+
+  // The time when this record was first created.
+  DateTimeColumn get creationTimestamp =>
+      dateTime().withDefault(currentDateAndTime)();
+
+  // The time when the profile information was last updated from the server.
+  DateTimeColumn get lastSyncTimestamp => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {profileId};
 }
 
 LazyDatabase _openConnection() {
@@ -78,10 +95,11 @@ Future<void> _deleteDatabase() async {
   await file.delete();
 }
 
-@DriftDatabase(tables: [AppState, Contacts], daos: [AppStateDao, ContactsDao])
+@DriftDatabase(
+    tables: [AppState, Contacts, Profiles],
+    daos: [AppStateDao, ContactsDao, ProfilesDao])
 class GonnaDatabase extends _$GonnaDatabase {
-
-  GonnaDatabase(QueryExecutor e): super(e);
+  GonnaDatabase(QueryExecutor e) : super(e);
 
   static GonnaDatabase? _instance;
 

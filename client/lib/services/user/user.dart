@@ -1,6 +1,5 @@
-import 'package:gonna_client/services/database/contacts_dao.dart'
-    as contacts_dao;
-import '../database/database.dart' as database;
+import 'package:gonna_client/services/database/contacts_profiles_dao.dart'
+    as contacts_profiles_dao;
 
 class User {
   String phoneNumber;
@@ -44,27 +43,28 @@ class UserService {
   }
 
   Stream<List<User>> queryPhoneContactsUsersByName(String queryString) {
-    return contacts_dao.ContactsDao.instance.readAllContacts().watch().asyncMap(
-        (contacts) => contacts
+    return contacts_profiles_dao.ContactsProfilesDao.instance
+        .watchAllContactsProfiles(orderByName: true)
+        .asyncMap((contactsProfiles) => contactsProfiles
             .map(_convertToUser)
             .where(_userHasSomeName)
             .where((user) => _userMatchesQuery(user, queryString))
             .toList());
   }
 
-  User _convertToUser(database.Contact contact) {
-    if (contact.profileId == null) {
+  User _convertToUser(contacts_profiles_dao.ContactProfile contactProfile) {
+    if (contactProfile.profile == null) {
       return User(
-        phoneNumber: contact.phoneNumber,
-        firstName: contact.firstName,
-        lastName: contact.lastName,
+        phoneNumber: contactProfile.contact.phoneNumber,
+        firstName: contactProfile.contact.firstName,
+        lastName: contactProfile.contact.lastName,
       );
     } else {
       return User(
-        phoneNumber: contact.phoneNumber,
-        profileId: contact.profileId,
-        firstName: contact.profileFirstName,
-        lastName: contact.profileLastName,
+        phoneNumber: contactProfile.contact.phoneNumber,
+        profileId: contactProfile.contact.profileId,
+        firstName: contactProfile.profile!.firstName,
+        lastName: contactProfile.profile!.lastName,
       );
     }
   }
