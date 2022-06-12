@@ -14,6 +14,10 @@ void main() {
     contactsDao = contacts_dao.ContactsDao(database!);
   });
 
+  tearDown(() async {
+    await database!.close();
+  });
+
   test('Create contacts and read them.', () async {
     await contactsDao!.createContacts([
       contacts_dao.ContactSeed('+123456789',
@@ -42,25 +46,6 @@ void main() {
       expect(contact.profileId, isNull);
       expect(contact.creationTimestamp, isNotNull);
       expect(contact.lastSyncTimestamp, isNull);
-    });
-  });
-
-  test('Create contacts and read them sorted by name.', () async {
-    await contactsDao!.createContacts([
-      contacts_dao.ContactSeed('+123456789',
-          firstName: 'John', lastName: 'Doe'),
-      contacts_dao.ContactSeed('+987654321', firstName: 'Barack'),
-      contacts_dao.ContactSeed('+555444555', lastName: 'Adams'),
-    ]);
-
-    await contactsDao!.readAllContacts(orderByName: true).get().then((contacts) {
-      expect(contacts.length, 3);
-      var contact = contacts[0];
-      expect(contact.lastName, 'Adams');
-      contact = contacts[1];
-      expect(contact.firstName, 'Barack');
-      contact = contacts[2];
-      expect(contact.firstName, 'John');
     });
   });
 
@@ -172,9 +157,5 @@ void main() {
       expect(contact.creationTimestamp, isNotNull);
       expect(contact.lastSyncTimestamp, isNotNull);
     });
-  });
-
-  tearDown(() async {
-    await database!.close();
   });
 }

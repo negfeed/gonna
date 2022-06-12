@@ -52,6 +52,20 @@ class ProfileFirestoreService extends foundation.ChangeNotifier {
     });
   }
 
+  Future<Map<String, Profile>> getProfileDocsOfProfileIds(List<String> profileIds) async {
+    if (profileIds.isEmpty) {
+      return {};
+    }
+    return _firestore
+        .collection('profiles')
+        .where('__name__', whereIn: profileIds)
+        .get()
+        .then((querySnapshot) => Map.fromIterable(
+            querySnapshot.docs,
+            key: (d) => d.id,
+            value: (d) => Profile.fromJson(d.data())));
+  }
+
   bool isProfileInitialized() {
     return _preferences.getString(profileFirstNamePrefKey) != null &&
         _preferences.getString(profileLastNamePrefKey) != null;

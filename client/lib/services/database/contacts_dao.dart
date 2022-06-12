@@ -13,7 +13,7 @@ class ContactSeed {
 class UpdateProfileId {
   String phoneNumber;
   String? profileId;
-  UpdateProfileId(this.phoneNumber, {this.profileId=null});
+  UpdateProfileId(this.phoneNumber, {this.profileId = null});
 }
 
 @DriftAccessor(tables: [Contacts])
@@ -32,20 +32,8 @@ class ContactsDao extends DatabaseAccessor<GonnaDatabase>
     return _instance!;
   }
 
-  MultiSelectable<Contact> readAllContacts({orderByName: false}) {
+  MultiSelectable<Contact> readAllContacts() {
     var query = select(contacts);
-    if (orderByName) {
-      query = query..orderBy([
-        (c) => OrderingTerm(
-          expression: c.firstName,
-          mode: OrderingMode.asc,
-        ),
-        (c) => OrderingTerm(
-          expression: c.lastName,
-          mode: OrderingMode.asc,
-        ),
-      ]);
-    }
     return query;
   }
 
@@ -62,13 +50,13 @@ class ContactsDao extends DatabaseAccessor<GonnaDatabase>
               .map((cs) => ContactsCompanion.insert(
                   phoneNumber: cs.phoneNumber,
                   firstName: Value<String>.ofNullable(cs.firstName),
-                  lastName: Value<String>.ofNullable(cs.lastName),
-                  creationTimestamp: Value(DateTime.now())))
+                  lastName: Value<String>.ofNullable(cs.lastName)))
               .toList());
     });
   }
 
-  Future<void> updateProfileId(UpdateProfileId updateProfileId) async {
+  Future<void> updateProfileId(
+      UpdateProfileId updateProfileId) async {
     await (update(contacts)
           ..where((c) => c.phoneNumber.equals(updateProfileId.phoneNumber)))
         .write(ContactsCompanion(
@@ -78,6 +66,7 @@ class ContactsDao extends DatabaseAccessor<GonnaDatabase>
 
   Future<void> updateProfileIds(
       Iterable<UpdateProfileId> updateProfileIds) async {
-    await Future.wait(updateProfileIds.map((e) => updateProfileId(e)));
+    await Future.wait(
+        updateProfileIds.map((e) => updateProfileId(e)));
   }
 }

@@ -853,14 +853,315 @@ class $ContactsTable extends Contacts with TableInfo<$ContactsTable, Contact> {
   }
 }
 
+class Profile extends DataClass implements Insertable<Profile> {
+  final String profileId;
+  final String? firstName;
+  final String? lastName;
+  final DateTime creationTimestamp;
+  final DateTime? lastSyncTimestamp;
+  Profile(
+      {required this.profileId,
+      this.firstName,
+      this.lastName,
+      required this.creationTimestamp,
+      this.lastSyncTimestamp});
+  factory Profile.fromData(Map<String, dynamic> data, {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return Profile(
+      profileId: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}profile_id'])!,
+      firstName: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}first_name']),
+      lastName: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}last_name']),
+      creationTimestamp: const DateTimeType().mapFromDatabaseResponse(
+          data['${effectivePrefix}creation_timestamp'])!,
+      lastSyncTimestamp: const DateTimeType().mapFromDatabaseResponse(
+          data['${effectivePrefix}last_sync_timestamp']),
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['profile_id'] = Variable<String>(profileId);
+    if (!nullToAbsent || firstName != null) {
+      map['first_name'] = Variable<String?>(firstName);
+    }
+    if (!nullToAbsent || lastName != null) {
+      map['last_name'] = Variable<String?>(lastName);
+    }
+    map['creation_timestamp'] = Variable<DateTime>(creationTimestamp);
+    if (!nullToAbsent || lastSyncTimestamp != null) {
+      map['last_sync_timestamp'] = Variable<DateTime?>(lastSyncTimestamp);
+    }
+    return map;
+  }
+
+  ProfilesCompanion toCompanion(bool nullToAbsent) {
+    return ProfilesCompanion(
+      profileId: Value(profileId),
+      firstName: firstName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(firstName),
+      lastName: lastName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastName),
+      creationTimestamp: Value(creationTimestamp),
+      lastSyncTimestamp: lastSyncTimestamp == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSyncTimestamp),
+    );
+  }
+
+  factory Profile.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Profile(
+      profileId: serializer.fromJson<String>(json['profileId']),
+      firstName: serializer.fromJson<String?>(json['firstName']),
+      lastName: serializer.fromJson<String?>(json['lastName']),
+      creationTimestamp:
+          serializer.fromJson<DateTime>(json['creationTimestamp']),
+      lastSyncTimestamp:
+          serializer.fromJson<DateTime?>(json['lastSyncTimestamp']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'profileId': serializer.toJson<String>(profileId),
+      'firstName': serializer.toJson<String?>(firstName),
+      'lastName': serializer.toJson<String?>(lastName),
+      'creationTimestamp': serializer.toJson<DateTime>(creationTimestamp),
+      'lastSyncTimestamp': serializer.toJson<DateTime?>(lastSyncTimestamp),
+    };
+  }
+
+  Profile copyWith(
+          {String? profileId,
+          String? firstName,
+          String? lastName,
+          DateTime? creationTimestamp,
+          DateTime? lastSyncTimestamp}) =>
+      Profile(
+        profileId: profileId ?? this.profileId,
+        firstName: firstName ?? this.firstName,
+        lastName: lastName ?? this.lastName,
+        creationTimestamp: creationTimestamp ?? this.creationTimestamp,
+        lastSyncTimestamp: lastSyncTimestamp ?? this.lastSyncTimestamp,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Profile(')
+          ..write('profileId: $profileId, ')
+          ..write('firstName: $firstName, ')
+          ..write('lastName: $lastName, ')
+          ..write('creationTimestamp: $creationTimestamp, ')
+          ..write('lastSyncTimestamp: $lastSyncTimestamp')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      profileId, firstName, lastName, creationTimestamp, lastSyncTimestamp);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Profile &&
+          other.profileId == this.profileId &&
+          other.firstName == this.firstName &&
+          other.lastName == this.lastName &&
+          other.creationTimestamp == this.creationTimestamp &&
+          other.lastSyncTimestamp == this.lastSyncTimestamp);
+}
+
+class ProfilesCompanion extends UpdateCompanion<Profile> {
+  final Value<String> profileId;
+  final Value<String?> firstName;
+  final Value<String?> lastName;
+  final Value<DateTime> creationTimestamp;
+  final Value<DateTime?> lastSyncTimestamp;
+  const ProfilesCompanion({
+    this.profileId = const Value.absent(),
+    this.firstName = const Value.absent(),
+    this.lastName = const Value.absent(),
+    this.creationTimestamp = const Value.absent(),
+    this.lastSyncTimestamp = const Value.absent(),
+  });
+  ProfilesCompanion.insert({
+    required String profileId,
+    this.firstName = const Value.absent(),
+    this.lastName = const Value.absent(),
+    this.creationTimestamp = const Value.absent(),
+    this.lastSyncTimestamp = const Value.absent(),
+  }) : profileId = Value(profileId);
+  static Insertable<Profile> custom({
+    Expression<String>? profileId,
+    Expression<String?>? firstName,
+    Expression<String?>? lastName,
+    Expression<DateTime>? creationTimestamp,
+    Expression<DateTime?>? lastSyncTimestamp,
+  }) {
+    return RawValuesInsertable({
+      if (profileId != null) 'profile_id': profileId,
+      if (firstName != null) 'first_name': firstName,
+      if (lastName != null) 'last_name': lastName,
+      if (creationTimestamp != null) 'creation_timestamp': creationTimestamp,
+      if (lastSyncTimestamp != null) 'last_sync_timestamp': lastSyncTimestamp,
+    });
+  }
+
+  ProfilesCompanion copyWith(
+      {Value<String>? profileId,
+      Value<String?>? firstName,
+      Value<String?>? lastName,
+      Value<DateTime>? creationTimestamp,
+      Value<DateTime?>? lastSyncTimestamp}) {
+    return ProfilesCompanion(
+      profileId: profileId ?? this.profileId,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      creationTimestamp: creationTimestamp ?? this.creationTimestamp,
+      lastSyncTimestamp: lastSyncTimestamp ?? this.lastSyncTimestamp,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (profileId.present) {
+      map['profile_id'] = Variable<String>(profileId.value);
+    }
+    if (firstName.present) {
+      map['first_name'] = Variable<String?>(firstName.value);
+    }
+    if (lastName.present) {
+      map['last_name'] = Variable<String?>(lastName.value);
+    }
+    if (creationTimestamp.present) {
+      map['creation_timestamp'] = Variable<DateTime>(creationTimestamp.value);
+    }
+    if (lastSyncTimestamp.present) {
+      map['last_sync_timestamp'] = Variable<DateTime?>(lastSyncTimestamp.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProfilesCompanion(')
+          ..write('profileId: $profileId, ')
+          ..write('firstName: $firstName, ')
+          ..write('lastName: $lastName, ')
+          ..write('creationTimestamp: $creationTimestamp, ')
+          ..write('lastSyncTimestamp: $lastSyncTimestamp')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ProfilesTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _profileIdMeta = const VerificationMeta('profileId');
+  @override
+  late final GeneratedColumn<String?> profileId = GeneratedColumn<String?>(
+      'profile_id', aliasedName, false,
+      type: const StringType(), requiredDuringInsert: true);
+  final VerificationMeta _firstNameMeta = const VerificationMeta('firstName');
+  @override
+  late final GeneratedColumn<String?> firstName = GeneratedColumn<String?>(
+      'first_name', aliasedName, true,
+      type: const StringType(), requiredDuringInsert: false);
+  final VerificationMeta _lastNameMeta = const VerificationMeta('lastName');
+  @override
+  late final GeneratedColumn<String?> lastName = GeneratedColumn<String?>(
+      'last_name', aliasedName, true,
+      type: const StringType(), requiredDuringInsert: false);
+  final VerificationMeta _creationTimestampMeta =
+      const VerificationMeta('creationTimestamp');
+  @override
+  late final GeneratedColumn<DateTime?> creationTimestamp =
+      GeneratedColumn<DateTime?>('creation_timestamp', aliasedName, false,
+          type: const IntType(),
+          requiredDuringInsert: false,
+          defaultValue: currentDateAndTime);
+  final VerificationMeta _lastSyncTimestampMeta =
+      const VerificationMeta('lastSyncTimestamp');
+  @override
+  late final GeneratedColumn<DateTime?> lastSyncTimestamp =
+      GeneratedColumn<DateTime?>('last_sync_timestamp', aliasedName, true,
+          type: const IntType(), requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [profileId, firstName, lastName, creationTimestamp, lastSyncTimestamp];
+  @override
+  String get aliasedName => _alias ?? 'profiles';
+  @override
+  String get actualTableName => 'profiles';
+  @override
+  VerificationContext validateIntegrity(Insertable<Profile> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('profile_id')) {
+      context.handle(_profileIdMeta,
+          profileId.isAcceptableOrUnknown(data['profile_id']!, _profileIdMeta));
+    } else if (isInserting) {
+      context.missing(_profileIdMeta);
+    }
+    if (data.containsKey('first_name')) {
+      context.handle(_firstNameMeta,
+          firstName.isAcceptableOrUnknown(data['first_name']!, _firstNameMeta));
+    }
+    if (data.containsKey('last_name')) {
+      context.handle(_lastNameMeta,
+          lastName.isAcceptableOrUnknown(data['last_name']!, _lastNameMeta));
+    }
+    if (data.containsKey('creation_timestamp')) {
+      context.handle(
+          _creationTimestampMeta,
+          creationTimestamp.isAcceptableOrUnknown(
+              data['creation_timestamp']!, _creationTimestampMeta));
+    }
+    if (data.containsKey('last_sync_timestamp')) {
+      context.handle(
+          _lastSyncTimestampMeta,
+          lastSyncTimestamp.isAcceptableOrUnknown(
+              data['last_sync_timestamp']!, _lastSyncTimestampMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {profileId};
+  @override
+  Profile map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return Profile.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $ProfilesTable createAlias(String alias) {
+    return $ProfilesTable(attachedDatabase, alias);
+  }
+}
+
 abstract class _$GonnaDatabase extends GeneratedDatabase {
   _$GonnaDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   late final $AppStateTable appState = $AppStateTable(this);
   late final $ContactsTable contacts = $ContactsTable(this);
+  late final $ProfilesTable profiles = $ProfilesTable(this);
   late final AppStateDao appStateDao = AppStateDao(this as GonnaDatabase);
   late final ContactsDao contactsDao = ContactsDao(this as GonnaDatabase);
+  late final ProfilesDao profilesDao = ProfilesDao(this as GonnaDatabase);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [appState, contacts];
+  List<DatabaseSchemaEntity> get allSchemaEntities =>
+      [appState, contacts, profiles];
 }
