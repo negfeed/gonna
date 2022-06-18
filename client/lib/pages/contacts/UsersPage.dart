@@ -32,31 +32,11 @@ class UserListItem extends StatelessWidget {
       );
     }
 
-    return FutureBuilder(
-        future: StorageService.instance.getProfilePictureThumbnailUrl(user.profileId!),
-        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-          if (snapshot.hasData) {
-            return CircleAvatar(
-              backgroundImage: cached_network_image.CachedNetworkImageProvider(
-                  snapshot.data!),
-            );
-          } else if (snapshot.hasError) {
-            print('Error getting profile picture thumbnail url: ${snapshot.error}');
-            return CircleAvatar(
-              child: Text(
-                _abbreviation(user),
-                style: TextStyle(color: Colors.white),
-              ),
-            );
-          } else {
-            return CircleAvatar(
-              child: Text(
-                _abbreviation(user),
-                style: TextStyle(color: Colors.white),
-              ),
-            );
-          }
-        });
+    return CircleAvatar(
+      backgroundImage: cached_network_image.CachedNetworkImageProvider(
+          StorageService.instance
+              .getProfilePictureThumbnailUrl(user.profileId!)),
+    );
   }
 
   static Widget? _maybeInviteButton(user_service.User user) {

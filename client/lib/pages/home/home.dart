@@ -65,25 +65,21 @@ class _HomePageState extends State<HomePage> {
     return Drawer(
         child: ListView(
       children: <Widget>[
-        FutureBuilder<List<Object>>(
-            future: Future.wait([
-              app_state_dao.AppStateDao.instance.getUserInfo(),
-              storage.StorageService.instance
-                  .getProfilePictureUrl(AuthService.instance.currentUser!.uid),
-            ]),
+        FutureBuilder<app_state_dao.UserInfo>(
+            future: app_state_dao.AppStateDao.instance.getUserInfo(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                app_state_dao.UserInfo userInfo =
-                    snapshot.data![0] as app_state_dao.UserInfo;
-                var profilePictureUrl = snapshot.data![1] as String;
+                app_state_dao.UserInfo userInfo = snapshot.data!;
                 return UserAccountsDrawerHeader(
                   accountName:
                       Text('${userInfo.firstName} ${userInfo.lastName}'),
                   accountEmail: Text(userInfo.phoneNumber!),
                   currentAccountPicture: CircleAvatar(
                     backgroundImage:
-                        cached_network_image.CachedNetworkImageProvider(
-                            profilePictureUrl),
+                        cached_network_image.CachedNetworkImageProvider(storage
+                            .StorageService.instance
+                            .getProfilePictureUrl(
+                                AuthService.instance.currentUser!.uid)),
                   ),
                 );
               } else if (snapshot.hasError) {

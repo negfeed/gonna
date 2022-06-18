@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:gonna_client/services/auth/auth.dart' as auth;
+import 'package:gonna_client/services/flavor/flavor.dart' as flavor;
 
 class StorageService {
   final firebase_storage.FirebaseStorage _storage =
@@ -28,11 +30,13 @@ class StorageService {
     print('Finished uploading the image');
   }
 
-  Future<String> getProfilePictureThumbnailUrl(String profileId) {
-    return _storage.ref('profileImage-thumbnails/$profileId').getDownloadURL();
+  String getProfilePictureThumbnailUrl(String profileId) {
+    return flavor.FlavorConfig.instance.storageUrlBase +
+        'profileImage-thumbnails%2F$profileId?alt=media';
   }
 
-  Future<String> getProfilePictureUrl(String profileId) {
-    return _storage.ref('profileImage-profiles/$profileId').getDownloadURL();
+  String getProfilePictureUrl(String profileId) {
+    return flavor.FlavorConfig.instance.storageUrlBase +
+        'profileImage-profiles%2F$profileId?alt=media';
   }
 }

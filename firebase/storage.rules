@@ -18,13 +18,13 @@ service firebase.storage {
 
   match /b/{bucket}/o {
     match /profileImage-profiles/{allImages=**} {
-      allow read: if signedIn();
+      allow read: if true;
     }
   }
 
   match /b/{bucket}/o {
     match /profileImage-thumbnails/{allImages=**} {
-      allow read: if signedIn();
+      allow read: if true;
     }
   }
 }
