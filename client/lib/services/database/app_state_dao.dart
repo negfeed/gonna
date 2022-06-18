@@ -5,6 +5,14 @@ part 'app_state_dao.g.dart';
 
 const int _singletonId = 1;
 
+class UserInfo {
+  final String? phoneNumber;
+  final String? firstName;
+  final String? lastName;
+
+  UserInfo({this.phoneNumber, this.firstName, this.lastName});
+}
+
 @DriftAccessor(tables: [AppState])
 class AppStateDao extends DatabaseAccessor<GonnaDatabase>
     with _$AppStateDaoMixin {
@@ -61,5 +69,15 @@ class AppStateDao extends DatabaseAccessor<GonnaDatabase>
 
   UpdateStatement<AppState, AppStateData> updateSingleton() {
     return update(appState)..where((as) => as.id.equals(_singletonId));
+  }
+
+  Future<UserInfo> getUserInfo() async {
+    var query = select(appState)..where((as) => as.id.equals(_singletonId));
+    return query.getSingle().then((value) {
+      return UserInfo(
+          phoneNumber: value.phoneNumber,
+          firstName: value.firstName,
+          lastName: value.lastName);
+    });
   }
 }

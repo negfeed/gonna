@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+
+import 'package:cached_network_image/cached_network_image.dart'
+    as cached_network_image;
 import 'package:gonna_client/pages/contacts/ContactsPage.dart';
 import 'package:gonna_client/pages/contacts/UsersPage.dart';
 import 'package:gonna_client/pages/create/create.dart';
 import 'package:gonna_client/services/auth/auth.dart';
-import 'package:gonna_client/services/contact_sync/contact_sync.dart' as contact_sync;
+import 'package:gonna_client/services/contact_sync/contact_sync.dart'
+    as contact_sync;
+import 'package:gonna_client/services/database/app_state_dao.dart'
+    as app_state_dao;
+import 'package:gonna_client/services/storage/storage.dart' as storage;
 import 'package:gonna_client/services/wipeout/wipeout.dart';
 
 class HomePage extends StatefulWidget {
@@ -12,7 +19,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   void _createPlan() {
     Navigator.of(context)
         .push(MaterialPageRoute<void>(builder: (_) => CreatePlanPage()));
@@ -20,12 +26,14 @@ class _HomePageState extends State<HomePage> {
 
   void _openContacts() {
     Navigator.of(context).pop();
-    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ContactsPage()));
+    Navigator.of(context)
+        .push(MaterialPageRoute<void>(builder: (_) => ContactsPage()));
   }
 
   void _openUsers() {
     Navigator.of(context).pop();
-    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => UsersPage()));
+    Navigator.of(context)
+        .push(MaterialPageRoute<void>(builder: (_) => UsersPage()));
   }
 
   @override
@@ -57,10 +65,33 @@ class _HomePageState extends State<HomePage> {
     return Drawer(
         child: ListView(
       children: <Widget>[
-        UserAccountsDrawerHeader(
-          accountName: Text('TODO: Name'),
-          accountEmail: Text('TODO: Email'),
-        ),
+        FutureBuilder<List<Object>>(
+            future: Future.wait([
+              app_state_dao.AppStateDao.instance.getUserInfo(),
+              storage.StorageService.instance
+                  .getProfilePictureUrl(AuthService.instance.currentUser!.uid),
+            ]),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                app_state_dao.UserInfo userInfo =
+                    snapshot.data![0] as app_state_dao.UserInfo;
+                var profilePictureUrl = snapshot.data![1] as String;
+                return UserAccountsDrawerHeader(
+                  accountName:
+                      Text('${userInfo.firstName} ${userInfo.lastName}'),
+                  accountEmail: Text(userInfo.phoneNumber!),
+                  currentAccountPicture: CircleAvatar(
+                    backgroundImage:
+                        cached_network_image.CachedNetworkImageProvider(
+                            profilePictureUrl),
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return const Text('Awaiting result...');
+              }
+            }),
         ListTile(
           title: Text('Contacts (phone)'),
           onTap: _openContacts,
@@ -71,7 +102,8 @@ class _HomePageState extends State<HomePage> {
         ),
         ListTile(
           title: Text('Sync all contacts'),
-          onTap: () => contact_sync.ContactSyncService.instance.syncAllContacts(),
+          onTap: () =>
+              contact_sync.ContactSyncService.instance.syncAllContacts(),
         ),
         ListTile(
           title: Text('Signout and Wipeout'),
