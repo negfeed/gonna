@@ -4,15 +4,27 @@ service firebase.storage {
   function isDeviceAccount() {
     return request.auth.token.gat == 'device';
   }
-  
+
   function signedIn() {
     return request.auth.uid != null && isDeviceAccount();
   }
-  
+
   match /b/{bucket}/o {
     match /profileImage/{userId} {
       allow read: if signedIn();
       allow write: if request.auth.uid == userId && isDeviceAccount();
+    }
+  }
+
+  match /b/{bucket}/o {
+    match /profileImage-profiles/{allImages=**} {
+      allow read: if signedIn();
+    }
+  }
+
+  match /b/{bucket}/o {
+    match /profileImage-thumbnails/{allImages=**} {
+      allow read: if signedIn();
     }
   }
 }
