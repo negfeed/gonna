@@ -7,12 +7,12 @@ const os = require('os');
 const fs = require('fs');
 
 // Max height and width of the thumbnail in pixels.
-const THUMB_MAX_HEIGHT = 32;
-const THUMB_MAX_WIDTH = 32;
+const THUMB_MAX_HEIGHT = 128;
+const THUMB_MAX_WIDTH = 128;
 
 // Max height and width of the profile image in pixels.
-const PROFILE_MAX_HEIGHT = 200;
-const PROFILE_MAX_WIDTH = 200;
+const PROFILE_MAX_HEIGHT = 512;
+const PROFILE_MAX_WIDTH = 512;
 
 /**
  * When an image is uploaded in the Storage bucket We generate optimized versions automatically using
