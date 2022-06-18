@@ -31,4 +31,8 @@ class StorageService {
   Future<String> getProfilePictureThumbnailUrl(String profileId) {
     return _storage.ref('profileImage-thumbnails/$profileId').getDownloadURL();
   }
+
+  Future<String> getProfilePictureUrl(String profileId) {
+    return _storage.ref('profileImage-profiles/$profileId').getDownloadURL();
+  }
 }
