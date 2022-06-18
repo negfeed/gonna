@@ -28,7 +28,7 @@ class StorageService {
     print('Finished uploading the image');
   }
 
-  Future<String> getProfilePictureUrl(String profileId) {
-    return _storage.ref('profileImage/$profileId').getDownloadURL();
+  Future<String> getProfilePictureThumbnailUrl(String profileId) {
+    return _storage.ref('profileImage-thumbnails/$profileId').getDownloadURL();
   }
 }

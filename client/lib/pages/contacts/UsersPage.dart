@@ -33,12 +33,20 @@ class UserListItem extends StatelessWidget {
     }
 
     return FutureBuilder(
-        future: StorageService.instance.getProfilePictureUrl(user.profileId!),
+        future: StorageService.instance.getProfilePictureThumbnailUrl(user.profileId!),
         builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
           if (snapshot.hasData) {
             return CircleAvatar(
               backgroundImage: cached_network_image.CachedNetworkImageProvider(
                   snapshot.data!),
+            );
+          } else if (snapshot.hasError) {
+            print('Error getting profile picture thumbnail url: ${snapshot.error}');
+            return CircleAvatar(
+              child: Text(
+                _abbreviation(user),
+                style: TextStyle(color: Colors.white),
+              ),
             );
           } else {
             return CircleAvatar(
